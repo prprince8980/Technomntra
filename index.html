@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Technomantra 2026 - Midnight Album</title>
 
   <!-- Supabase SDK -->
@@ -11,25 +11,38 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <!-- Turn.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/3/turn.min.js"></script>
+  <!-- Modernizr -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+  
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400&family=Indie+Flower&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      /* YOUR NEW THEME COLORS */
-      --bg-color: #222831;       /* Deep Navy Background */
-      --card-bg: #31363F;       /* Dark Blue-Grey Panels */
-      --border: #76ABAE;         /* Teal Borders */
-      --text-main: #E1E8EF;       /* Off-White Text */
-      --text-muted: #9CA3AF;       /* Muted Teal Text */
-      --accent: #76ABAE;          /* Teal Accent */
-      --paper-color: #EEEEEE;      /* Light Grey Paper */
-      --ink-color: #222831;       /* Navy Ink */
+      /* --- NEW MODERN PALETTE --- */
+      --bg-color: #0f172a;       /* Deep Rich Slate (Almost Black) */
+      --card-bg: #1e293b;        /* Lighter Slate for panels */
+      --border: #334155;         /* Subtle Slate Border */
+      
+      /* Accents */
+      --accent: #7c3aed;         /* Electric Violet (Main Action) */
+      --accent-glow: #8b5cf6;    /* Lighter Violet for hover */
+      --secondary: #06b6d4;      /* Cyan (Tape, Details, Success) */
+      
+      /* Text */
+      --text-main: #f8fafc;       /* Near White */
+      --text-muted: #94a3b8;     /* Muted Blue-Grey */
+      
+      /* Paper Elements */
+      --paper-color: #f8fafc;    /* White-ish paper */
+      --ink-color: #0f172a;      /* Dark Ink for text */
+      
+      /* Status */
       --danger: #ef4444; 
-      --warning: #eab308;
+      --success: #10b981;
     }
 
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
     body {
       margin: 0;
@@ -39,52 +52,98 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      align-items: center;
+      overflow-x: hidden;
     }
     
+    /* --- TOAST NOTIFICATIONS --- */
+    #toast-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        pointer-events: none;
+    }
+
+    .toast {
+        background: var(--card-bg);
+        border-left: 4px solid var(--accent);
+        color: var(--text-main);
+        padding: 16px 20px;
+        border-radius: 8px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        font-size: 14px;
+        pointer-events: auto;
+        animation: slideIn 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        max-width: 300px;
+        font-family: 'JetBrains Mono', monospace;
+        backdrop-filter: blur(10px);
+    }
+
+    .toast.error { border-left-color: var(--danger); }
+    .toast.success { border-left-color: var(--secondary); }
+
+    @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes fadeOut {
+        to { opacity: 0; transform: translateY(10px); }
+    }
+
     /* --- Navigation --- */
     nav {
       width: 100%;
       padding: 15px;
       display: flex;
       justify-content: center;
-      gap: 15px;
-      background-color: rgba(0, 0, 0, 0.3);
+      gap: 10px;
+      background-color: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(10px);
       border-bottom: 1px solid var(--border);
       position: sticky;
       top: 0;
       z-index: 50;
+      flex-wrap: wrap;
     }
 
     .nav-btn {
       background: transparent;
       border: 1px solid var(--border);
-      color: var(--text-main);
-      padding: 10px 24px;
-      border-radius: 4px;
+      color: var(--text-muted);
+      padding: 10px 20px;
+      border-radius: 8px;
       cursor: pointer;
-      font-size: 14px;
-      font-weight: 500;
+      font-size: 12px; 
+      font-weight: 600;
       transition: all 0.2s ease;
       font-family: 'JetBrains Mono', monospace;
+      flex: 1 1 auto; 
+      min-width: 120px;
+      text-align: center;
+      letter-spacing: 0.5px;
     }
 
     .nav-btn.active, .nav-btn:hover {
-      background-color: var(--accent); /* Teal */
-      color: var(--bg-color); /* Navy Text */
+      background-color: var(--accent);
+      color: white;
       border-color: var(--accent);
-      font-weight: 700;
+      box-shadow: 0 0 15px rgba(124, 58, 237, 0.4); /* Glow */
     }
 
     /* --- Main Container --- */
     main {
       flex: 1;
       width: 100%;
-      max-width: 1000px;
+      max-width: 1200px;
+      margin: 0 auto;
       display: flex;
       justify-content: center;
       align-items: flex-start;
-      padding: 60px 20px;
+      padding: 20px;
+      position: relative;
     }
     
     .section-container {
@@ -106,98 +165,119 @@
     }
 
     .hero h1 {
-      font-size: 48px;
-      letter-spacing: -1px;
+      font-size: clamp(32px, 5vw, 48px);
+      letter-spacing: -2px;
       color: var(--text-main);
       margin-bottom: 20px;
-      font-weight: 300;
+      font-weight: 800;
+      background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
     .hero p {
       color: var(--text-muted);
       font-size: 16px;
-      line-height: 1.6;
-      max-width: 400px;
+      line-height: 1.7;
     }
 
     .card {
       background: var(--card-bg);
       border: 1px solid var(--border);
-      padding: 40px;
-      border-radius: 8px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.4);
       width: 100%;
     }
 
     label {
-      font-size: 12px;
+      font-size: 11px;
       text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--text-muted);
+      letter-spacing: 1.5px;
+      color: var(--secondary);
       margin-bottom: 8px;
       display: block;
       font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
     }
 
     input, textarea {
       width: 100%;
       padding: 14px;
-      margin-bottom: 24px;
-      border-radius: 4px;
+      margin-bottom: 20px;
+      border-radius: 8px;
       border: 1px solid var(--border);
-      background: rgba(0, 0, 0, 0.3);
+      background: rgba(15, 23, 42, 0.5);
       color: var(--text-main);
       font-size: 14px;
       font-family: 'Inter', sans-serif;
-      transition: border-color 0.2s;
+      transition: all 0.2s;
+      -webkit-appearance: none; 
     }
 
-    input:focus, textarea:focus { outline: none; border-color: var(--accent); }
+    input:focus, textarea:focus { 
+        outline: none; 
+        border-color: var(--accent); 
+        box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
+    }
 
     button.action-btn {
       width: 100%;
-      padding: 16px;
-      border-radius: 4px;
+      padding: 14px;
+      border-radius: 8px;
       border: none;
-      background-color: var(--accent);
-      color: var(--bg-color);
+      background: linear-gradient(135deg, var(--accent) 0%, #6d28d9 100%);
+      color: white;
       font-size: 14px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 1px;
       cursor: pointer;
-      transition: background 0.2s ease;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
     }
 
-    button.action-btn:hover { opacity: 0.9; }
+    button.action-btn:hover { 
+        transform: translateY(-2px); 
+        box-shadow: 0 8px 25px rgba(124, 58, 237, 0.5);
+    }
+    button.action-btn:disabled { 
+        background: var(--border); 
+        cursor: not-allowed; 
+        transform: none; 
+        box-shadow: none; 
+    }
 
     /* --- Album & Flipbook --- */
     #album-section {
       flex-direction: column;
       align-items: center;
-      min-height: 600px;
+      min-height: 600px; 
       width: 100%;
     }
     
     .flipbook-viewport {
       overflow: hidden;
       width: 100%;
-      max-width: 900px;
-      height: 600px;
+      height: 600px; 
       display: flex;
       justify-content: center;
       align-items: center;
       position: relative;
-      background: #1a1e29; /* Very dark container */
+      background: linear-gradient(180deg, #0f172a 0%, #1e1b4b 100%); 
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      box-shadow: inset 0 0 50px rgba(0,0,0,0.5);
     }
     
     .book-nav {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      width: 44px;
-      height: 44px;
-      background: var(--card-bg);
+      width: 48px;
+      height: 48px;
+      background: rgba(30, 41, 59, 0.8);
+      backdrop-filter: blur(5px);
       color: var(--text-main);
       border: 1px solid var(--border);
       display: flex;
@@ -206,30 +286,48 @@
       cursor: pointer;
       z-index: 100;
       transition: all 0.2s;
+      border-radius: 50%; 
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     }
-    .book-nav:hover { background: var(--accent); color: var(--bg-color); border-color: var(--accent); }
-    .nav-prev { left: 20px; } .nav-next { right: 20px; }
+    
+    .book-nav:hover { 
+        background: var(--accent); 
+        color: white; 
+        border-color: var(--accent); 
+        box-shadow: 0 0 15px var(--accent);
+    }
+    .nav-prev { left: 20px; } 
+    .nav-next { right: 20px; }
 
-    #flipbook { width: 800px; height: 500px; transform-origin: top center; margin: 0 auto; }
+    #flipbook-wrapper {
+        transform-origin: top center;
+        margin: 0 auto;
+        transition: transform 0.3s ease;
+    }
 
-    /* --- PAGE STYLING (MIDNIGHT THEME) --- */
+    #flipbook { width: 800px; height: 500px; }
+
+    /* --- PAGE STYLING --- */
     .page { 
       width: 400px; 
       height: 500px; 
-      background-color: var(--paper-color); /* Light Grey Paper */
-      color: var(--ink-color); /* Navy Ink */
+      background-color: var(--paper-color);
+      color: var(--ink-color);
       overflow: hidden; 
-      box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.05); /* Deep inside shadow */
+      box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.1);
     }
 
     .page.hard { 
-      background-color: var(--bg-color); /* Deep Navy Cover */
-      border: 1px solid var(--accent); /* Teal Stitching */
+      background-color: var(--bg-color);
+      border: 1px solid var(--accent);
       display: flex;
       align-items: center;
       justify-content: center;
-      /* Leather texture simulation */
-      background-image: linear-gradient(45deg, #222831 25%, #1f2937 25%, #222831 50%, #1f2937 50%, #222831 75%, #1f2937 75%, #222831 100%);
+      /* Modern tech texture */
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(124, 58, 237, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.15) 0px, transparent 50%);
+      background-size: 100% 100%;
     }
 
     .cover-content {
@@ -239,66 +337,61 @@
       align-items: center;
       justify-content: center;
       z-index: 2;
+      padding: 20px;
     }
 
     .cover-title {
       font-family: 'Indie Flower', cursive;
-      font-size: 60px;
+      font-size: 64px;
       font-weight: 400;
-      color: var(--text-main);
-      text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.2);
+      color: white;
+      text-shadow: 0 4px 20px rgba(124, 58, 237, 0.6);
     }
 
     .cover-subtitle {
-      font-family: 'Indie Flower', cursive;
-      font-size: 32px;
-      color: var(--accent); /* Teal Subtitle */
-      margin-top: 15px;
-      letter-spacing: 2px;
-      font-weight: bold;
+      font-family: 'Inter', sans-serif;
+      font-size: 24px;
+      color: var(--secondary);
+      margin-top: 10px;
+      letter-spacing: 4px;
+      font-weight: 800;
+      text-transform: uppercase;
     }
     
     .back-cover-text {
-        font-family: 'Indie Flower', cursive;
-        font-size: 16px;
-        color: var(--text-muted);
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 12px;
+        color: var(--secondary);
         letter-spacing: 2px;
+        border-top: 1px solid var(--border);
+        padding-top: 10px;
     }
 
-    /* --- POLAROID WITH TEAL TAPE --- */
+    /* --- POLAROID --- */
     .polaroid-wrapper { 
-      background: #fff; /* Classic White Polaroid */
+      background: #fff;
       padding: 15px 15px 50px 15px; 
       width: 85%; 
       height: 85%; 
       margin: 30px auto; 
       display: flex;
       flex-direction: column;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
-      transform: rotate(0deg); 
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
       position: relative;
+      transform: translate(0, 0); 
     }
 
-    /* Tape Effect (Teal) */
+    /* Updated Tape Effect - Now Cyan/Teal */
     .polaroid-wrapper::before {
         content: '';
         position: absolute;
-        top: -12px; left: 15px;
-        width: 45px; height: 30px;
-        background: rgba(118, 171, 174, 0.6); /* Teal Tape */
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-        transform: rotate(-3deg);
-        z-index: 10;
-    }
-
-    .polaroid-wrapper::after {
-        content: '';
-        position: absolute;
-        top: -12px; right: 15px;
-        width: 45px; height: 30px;
-        background: rgba(118, 171, 174, 0.6);
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-        transform: rotate(3deg);
+        top: -15px; left: 50%;
+        transform: translateX(-50%) rotate(-2deg);
+        width: 120px; height: 35px;
+        background: rgba(6, 182, 212, 0.2); /* Transparent Cyan */
+        backdrop-filter: blur(4px);
+        border: 1px solid rgba(6, 182, 212, 0.4);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         z-index: 10;
     }
 
@@ -306,45 +399,49 @@
       width: 100%; 
       flex-grow: 1; 
       object-fit: cover; 
-      background: #f4f4f4; 
-      border: 1px solid #e0e0e0;
+      background: #f1f5f9; 
+      border: 1px solid #e2e8f0;
       margin-bottom: 25px;
-      filter: sepia(0.1); /* Slight vintage tint */
     }
     
-    .polaroid-info { text-align: center; width: 100%; display: flex; flex-direction: column; gap: 10px; }
+    .polaroid-info { text-align: center; width: 100%; display: flex; flex-direction: column; gap: 8px; }
     
     .polaroid-name { 
-        font-family: 'Indie Flower', cursive; 
-        font-size: 28px; 
-        font-weight: bold; 
-        color: var(--ink-color); /* Navy Ink */
+        font-family: 'Inter', sans-serif;
+        font-size: 18px; 
+        font-weight: 700;
+        color: var(--bg-color);
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
     
     .polaroid-feedback { 
         font-family: 'Indie Flower', cursive; 
-        font-size: 18px; 
-        color: #444; 
+        font-size: 20px; 
+        color: #475569; 
         font-style: italic;
     }
 
-    /* --- ADMIN PANEL STYLES --- */
-    .login-box { width: 100%; max-width: 400px; text-align: center; }
+    /* --- ADMIN PANEL --- */
+    .login-box { width: 100%; max-width: 400px; text-align: center; margin: 0 auto; }
     
-    .admin-controls { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
+    .admin-controls { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
     .btn-toggle { 
-        background: var(--card-bg); 
-        color: var(--text-main); 
-        padding: 5px 10px; 
+        background: var(--bg-color); 
+        color: var(--text-muted); 
+        padding: 8px 16px; 
         border: 1px solid var(--border); 
-        border-radius: 4px; 
+        border-radius: 6px; 
         cursor: pointer; 
         font-size: 12px;
+        font-family: 'JetBrains Mono', monospace;
+        transition: all 0.2s;
     }
     .btn-toggle.active { 
-        background: var(--accent); 
-        color: var(--bg-color); 
-        border-color: var(--accent);
+        background: var(--secondary);
+        color: #0f172a;
+        border-color: var(--secondary);
+        font-weight: 700;
     }
 
     .admin-grid {
@@ -358,18 +455,23 @@
         background: var(--card-bg);
         border: 1px solid var(--border);
         padding: 15px;
-        border-radius: 8px;
+        border-radius: 12px;
         display: flex;
         flex-direction: column;
+        transition: transform 0.2s;
+    }
+
+    .admin-card:hover {
+        border-color: var(--secondary);
     }
 
     .admin-card img {
         width: 100%;
-        height: 200px;
+        height: 180px;
         object-fit: cover;
-        margin-bottom: 10px;
-        border-radius: 4px;
-        border: 1px solid var(--paper-color);
+        margin-bottom: 15px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
     }
 
     .admin-actions {
@@ -380,80 +482,87 @@
 
     .btn-approve {
         flex: 1;
-        padding: 8px;
+        padding: 10px;
         background: var(--accent);
-        border: none;
-        color: var(--bg-color);
-        cursor: pointer;
-        border-radius: 4px;
-        font-weight: bold;
-        font-family: 'JetBrains Mono', monospace;
-    }
-
-    .btn-reject {
-        flex: 1;
-        padding: 8px;
-        background: var(--danger);
         border: none;
         color: white;
         cursor: pointer;
-        border-radius: 4px;
+        border-radius: 6px;
         font-weight: bold;
         font-family: 'JetBrains Mono', monospace;
-    }
-
-    /* --- STATUS CHECKER STYLES --- */
-    .status-search-box {
-        width: 100%;
-        max-width: 400px;
-        display: flex;
-        gap: 10px;
-        margin-bottom: 30px;
-    }
-    .status-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 20px;
-        width: 100%;
-    }
-    .status-card {
-        background: var(--card-bg);
-        border: 1px solid var(--border);
-        padding: 15px;
-        border-radius: 8px;
-        text-align: center;
-    }
-    .status-card img { width: 100%; height: 150px; object-fit: cover; margin-bottom: 10px; border-radius: 4px; border: 1px solid var(--paper-color); }
-    .status-badge {
-        display: inline-block;
-        padding: 4px 8px;
-        border-radius: 4px;
         font-size: 12px;
-        font-weight: bold;
-        text-transform: uppercase;
-        margin-top: 5px;
+        transition: background 0.2s;
     }
-    .badge-pending { background: var(--warning); color: #000; }
-    .badge-approved { background: var(--accent); color: var(--bg-color); }
-    .badge-rejected { background: var(--danger); color: #fff; }
+    .btn-approve:hover { background: var(--accent-glow); }
 
-    .loading-spinner { color: var(--text-muted); font-size: 14px; margin-top: 40px; letter-spacing: 1px; }
+    .btn-reject {
+        flex: 1;
+        padding: 10px;
+        background: transparent;
+        border: 1px solid var(--danger);
+        color: var(--danger);
+        cursor: pointer;
+        border-radius: 6px;
+        font-weight: bold;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 12px;
+        transition: all 0.2s;
+    }
+    .btn-reject:hover { background: var(--danger); color: white; }
 
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    /* Loader */
+    .loading-spinner { 
+        color: var(--secondary); 
+        font-size: 14px; 
+        margin-top: 40px; 
+        letter-spacing: 1px; 
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+    .spinner-circle {
+        width: 20px; height: 20px;
+        border: 2px solid var(--border);
+        border-top-color: var(--secondary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* --- RESPONSIVE MEDIA QUERIES --- */
     @media (max-width: 850px) {
-      .upload-layout { grid-template-columns: 1fr; text-align: center; gap: 40px; }
-      .hero p { margin: 0 auto 30px auto; }
+      .upload-layout { 
+          grid-template-columns: 1fr; 
+          text-align: center; 
+          gap: 40px; 
+      }
+      
+      .flipbook-viewport {
+          height: auto;
+          min-height: 400px;
+          padding: 20px 0;
+      }
+
+      .nav-btn {
+          padding: 8px 12px;
+          font-size: 11px;
+          min-width: 100px;
+      }
     }
   </style>
 </head>
 <body>
 
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+
   <nav>
     <button class="nav-btn active" onclick="switchTab('upload')">01 // UPLOAD</button>
     <button class="nav-btn" onclick="switchTab('album')">02 // ALBUM</button>
-    <button class="nav-btn" onclick="switchTab('status')">03 // MY STATUS</button>
-    <button class="nav-btn" onclick="switchTab('admin')">04 // ADMIN</button>
+    <button class="nav-btn" onclick="switchTab('admin')">03 // ADMIN</button>
   </nav>
 
   <main>
@@ -462,7 +571,7 @@
       <div class="upload-layout">
         <div class="hero">
           <h1>Technomantra<br>2026</h1>
-          <p>Secure upload gateway. Data is encrypted and archived. Photos require Admin approval.</p>
+          <p>Secure upload gateway. Data is encrypted and archived. Photos require Admin approval before appearing in the public album.</p>
         </div>
         <div class="card">
           <label for="name">Identifier</label>
@@ -484,31 +593,23 @@
       <div class="flipbook-viewport">
         <div class="book-nav nav-prev" onclick="goPrev()">&#8592;</div>
         <div class="book-nav nav-next" onclick="goNext()">&#8594;</div>
-        <div id="flipbook"></div>
-      </div>      
-      <div id="loading-msg" class="loading-spinner" style="display:none;">INITIALIZING ALBUM...</div>
-    </div>
-
-    <!-- SECTION 3: MY STATUS -->
-    <div id="status-section" class="section-container">
-        <div style="width: 100%; max-width: 800px;">
-            <h2 style="border-bottom: 1px solid var(--border); padding-bottom: 10px;">Check Upload Status</h2>
-            <div class="status-search-box">
-                <input type="text" id="status-search-input" placeholder="Enter your exact name..." />
-                <button class="action-btn" style="width:auto;" onclick="checkUserStatus()">CHECK</button>
-            </div>
-
-            <div id="status-grid" class="status-grid"></div>
-            <div id="status-empty" style="color: var(--text-muted); display:none;">No uploads found for this name.</div>
+        
+        <!-- Wrapper for scaling -->
+        <div id="flipbook-wrapper">
+            <div id="flipbook"></div>
         </div>
+      </div>      
+      <div id="loading-msg" class="loading-spinner" style="display:none;">
+          <div class="spinner-circle"></div> INITIALIZING ALBUM...
+      </div>
     </div>
 
-    <!-- SECTION 4: ADMIN LOGIN & DASHBOARD -->
+    <!-- SECTION 3: ADMIN LOGIN & DASHBOARD -->
     <div id="admin-section" class="section-container">
         
         <!-- LOGIN FORM -->
         <div id="admin-login-view" class="login-box card">
-            <h2 style="margin-top:0;">Admin Access</h2>
+            <h2 style="margin-top:0; color:var(--secondary);">Admin Access</h2>
             <p style="color:var(--text-muted); margin-bottom:20px;">Enter passcode to view dashboard.</p>
             <input type="password" id="admin-pass" placeholder="Enter Password" />
             <button class="action-btn" onclick="attemptAdminLogin()">LOGIN</button>
@@ -516,9 +617,9 @@
 
         <!-- DASHBOARD -->
         <div id="admin-dashboard-view" style="width: 100%; max-width: 1000px; display:none;">
-            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:20px;">
-                <h2 style="margin:0;">Admin Panel</h2>
-                <button onclick="logoutAdmin()" style="background:var(--card-bg); border:1px solid var(--border); color:var(--text-main); padding:5px 10px; border-radius:4px; cursor:pointer;">LOGOUT</button>
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:15px; margin-bottom:20px; flex-wrap: wrap; gap: 10px;">
+                <h2 style="margin:0; color:var(--text-main);">Admin Panel</h2>
+                <button onclick="logoutAdmin()" style="background:transparent; border:1px solid var(--border); color:var(--text-muted); padding:8px 16px; border-radius:6px; cursor:pointer; transition:all 0.2s;">LOGOUT</button>
             </div>
             
             <!-- TOGGLE BUTTONS -->
@@ -528,7 +629,7 @@
             </div>
 
             <div id="admin-grid" class="admin-grid"></div>
-            <div id="admin-empty" style="color: var(--text-muted); display:none;">No items found.</div>
+            <div id="admin-empty" style="color: var(--text-muted); display:none; text-align:center; padding: 20px;">No items found.</div>
         </div>
     </div>
   </main>
@@ -540,40 +641,88 @@
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const flipbook = $("#flipbook");
+    const flipbookWrapper = $("#flipbook-wrapper");
     let albumLoaded = false;
     let isAdminLoggedIn = false;
     let currentAdminFilter = 'pending';
 
+    // --- TOAST NOTIFICATION SYSTEM (Replaces Alert) ---
+    function showToast(message, type = 'info') {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.innerText = message;
+        
+        container.appendChild(toast);
+        
+        // Remove after 3 seconds
+        setTimeout(() => {
+            toast.style.animation = 'fadeOut 0.3s forwards';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
     // --- TAB LOGIC ---
     function switchTab(tabName) {
+      // UI Updates
       document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
+      const clickedBtn = event.target;
+      if(clickedBtn) clickedBtn.classList.add('active');
+
       document.querySelectorAll('.section-container').forEach(sec => sec.classList.remove('active'));
 
+      // Logic
       if (tabName === 'upload') {
         document.getElementById('upload-section').classList.add('active');
       } else if (tabName === 'album') {
         document.getElementById('album-section').classList.add('active');
         loadAlbum(); 
-      } else if (tabName === 'status') {
-        document.getElementById('status-section').classList.add('active');
       } else if (tabName === 'admin') {
         document.getElementById('admin-section').classList.add('active');
         if(isAdminLoggedIn) loadAdminPanel();
+      }
+      
+      // Re-calc book size if switching to album
+      if(tabName === 'album' && albumLoaded) {
+          setTimeout(scaleBook, 50);
       }
     }
 
     function goNext() { $("#flipbook").turn("next"); }
     function goPrev() { $("#flipbook").turn("previous"); }
 
-    // --- RESPONSIVE SCALING ---
+    // --- RESPONSIVE SCALING LOGIC ---
     function scaleBook() {
-        const width = $(window).width();
-        let scale = 1;
-        if (width < 850) scale = (width - 20) / 800;
-        $("#flipbook").css("transform", `scale(${scale})`);
-        $(".flipbook-viewport").css("height", `${500 * scale + 50}px`); 
+        if(!albumLoaded) return;
+
+        // The book's "intrinsic" size (defined in CSS #flipbook)
+        const bookWidth = 800;
+        const bookHeight = 500;
+        
+        // Get container width (minus padding)
+        const containerWidth = document.querySelector('.flipbook-viewport').clientWidth - 60; // 60px for arrows
+        const containerHeight = window.innerHeight * 0.8; // Max 80% of viewport height
+
+        // Calculate Scale based on Width (priority)
+        let scale = containerWidth / bookWidth;
+        
+        // Check if height is a constraint
+        if ((bookHeight * scale) > containerHeight) {
+            scale = containerHeight / bookHeight;
+        }
+
+        // Cap scale at 1.0
+        if (scale > 1) scale = 1;
+
+        // Apply transform
+        flipbookWrapper.css("transform", `scale(${scale})`);
+        
+        // Adjust container height to match the scaled book
+        const finalHeight = bookHeight * scale;
+        document.querySelector('.flipbook-viewport').style.height = `${finalHeight + 60}px`; 
     }
+
+    // Listen to resize
     $(window).resize(() => { if(albumLoaded) scaleBook(); });
 
     // --- ADMIN LOGIN ---
@@ -583,9 +732,10 @@
             isAdminLoggedIn = true;
             document.getElementById('admin-login-view').style.display = "none";
             document.getElementById('admin-dashboard-view').style.display = "block";
+            showToast("Admin Access Granted", "success");
             loadAdminPanel();
         } else {
-            alert("Incorrect Password");
+            showToast("Incorrect Password", "error");
         }
     }
 
@@ -594,6 +744,7 @@
         document.getElementById('admin-login-view').style.display = "block";
         document.getElementById('admin-dashboard-view').style.display = "none";
         document.getElementById('admin-pass').value = "";
+        showToast("Logged Out");
     }
 
     function setAdminFilter(filter) {
@@ -614,9 +765,14 @@
         const name = document.getElementById("name").value.trim();
         const file = document.getElementById("image").files[0];
         const feedback = document.getElementById("feedback").value.trim();
-        if (!name || !file) { alert("Identifier and File required."); return; }
+        
+        if (!name || !file) { 
+            showToast("Identifier and File required.", "error"); 
+            return; 
+        }
         
         const btn = document.getElementById("uploadBtn");
+        const originalText = btn.textContent;
         btn.textContent = "SUBMITTING...";
         btn.disabled = true;
 
@@ -637,13 +793,17 @@
 
             if (dbError) throw dbError;
 
-            alert("Upload Successful!");
-            document.getElementById("name").value = ""; document.getElementById("image").value = ""; document.getElementById("feedback").value = "";
-            albumLoaded = false; 
+            showToast("Upload Successful! Pending Approval.", "success");
+            document.getElementById("name").value = ""; 
+            document.getElementById("image").value = ""; 
+            document.getElementById("feedback").value = "";
+            albumLoaded = false; // Reset album so it reloads next time
 
-        } catch (e) { alert("Error: " + e.message); } 
-        finally {
-            btn.textContent = "SUBMIT FOR APPROVAL";
+        } catch (e) { 
+            console.error(e);
+            showToast("Error: " + e.message, "error"); 
+        } finally {
+            btn.textContent = originalText;
             btn.disabled = false;
         }
     });
@@ -653,7 +813,7 @@
       if (albumLoaded) return;
       const loadingMsg = document.getElementById('loading-msg');
       const flipbookEl = document.getElementById('flipbook');
-      loadingMsg.style.display = 'block';
+      loadingMsg.style.display = 'flex';
 
       try { if ($("#flipbook").turn("is")) { $("#flipbook").turn("destroy"); } } catch(e) {}
       flipbookEl.innerHTML = ''; 
@@ -668,10 +828,11 @@
         if (error) throw error;
 
         if(memories.length === 0) {
-            loadingMsg.innerText = "No approved memories found.";
+            loadingMsg.innerHTML = "<span>No approved memories found yet.</span>";
             return;
         }
 
+        // Cover Page
         $("<div class='page hard'>").append(
             $("<div class='cover-content'>").append(
                 $("<h1 class='cover-title'>").text("Technomantra"),
@@ -679,6 +840,7 @@
             )
         ).appendTo(flipbookEl);
 
+        // Memory Pages
         memories.forEach(memory => {
             const caption = memory.feedback ? `"${memory.feedback}"` : "";
             $("<div class='page'>").append(
@@ -692,6 +854,7 @@
             ).appendTo(flipbookEl);
         });
 
+        // Back Cover
         $("<div class='page hard'>").append(
              $("<div class='cover-content'>").append(
                 $("<h1 class='cover-title' style='font-size:48px; letter-spacing:0;'>").text("2026"),
@@ -699,14 +862,31 @@
              )
         ).appendTo(flipbookEl);
 
+        // Initialize Turn.js
         setTimeout(() => {
-            flipbook.turn({ width: 800, height: 500, autoCenter: true, duration: 1200, acceleration: true, gradients: true, elevation: 50 });
+            flipbook.turn({ 
+                width: 800, 
+                height: 500, 
+                autoCenter: true, 
+                duration: 1000, 
+                acceleration: true, 
+                gradients: true, 
+                elevation: 50,
+                when: {
+                    turning: function(e, page, view) {
+                        // Optional: play sound or log page
+                    }
+                }
+            });
             scaleBook();
             albumLoaded = true;
             loadingMsg.style.display = 'none';
         }, 100);
 
-      } catch (err) { console.error(err); loadingMsg.innerText = "Error loading"; }
+      } catch (err) { 
+          console.error(err); 
+          loadingMsg.innerText = "Error loading data."; 
+      }
     }
 
     // --- ADMIN PANEL ---
@@ -724,7 +904,10 @@
 
         const { data: items, error } = await query;
 
-        if(error) return alert("Error fetching data");
+        if(error) {
+            showToast("Error fetching admin data", "error");
+            return;
+        }
 
         if(items.length === 0) {
             empty.style.display = 'block';
@@ -733,24 +916,24 @@
 
         items.forEach(item => {
             let statusBadge = '';
-            if(item.status === 'approved') statusBadge = '<span style="color:var(--accent); font-weight:bold;">✔</span>';
-            if(item.status === 'rejected') statusBadge = '<span style="color:var(--danger); font-weight:bold;">✖</span>';
+            if(item.status === 'approved') statusBadge = '<span style="color:var(--secondary); font-weight:bold;">✔ Approved</span>';
+            if(item.status === 'rejected') statusBadge = '<span style="color:var(--danger); font-weight:bold;">✖ Rejected</span>';
 
             const card = document.createElement('div');
             card.className = 'admin-card';
             card.id = `card-${item.id}`;
             card.innerHTML = `
-                <img src="${item.image_url}" />
-                <div style="display:flex; justify-content:space-between;">
+                <img src="${item.image_url}" alt="Submission" />
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
                     <div style="font-weight:bold; color:var(--text-main);">${item.name}</div>
                     ${statusBadge}
                 </div>
-                <div style="font-size:12px; color:var(--text-muted);">${item.feedback || 'No feedback'}</div>
+                <div style="font-size:12px; color:var(--text-muted); margin-bottom:15px;">${item.feedback || 'No feedback'}</div>
                 <div class="admin-actions">
                     ${item.status === 'pending' ? `
                         <button class="btn-approve" onclick="updateStatus('${item.id}', 'approved')">APPROVE</button>
                         <button class="btn-reject" onclick="updateStatus('${item.id}', 'rejected')">REJECT</button>
-                    ` : '<span style="font-size:12px; color:var(--text-muted); width:100%; text-align:center;">No actions</span>'}
+                    ` : '<span style="font-size:12px; color:var(--text-muted); width:100%; text-align:center;">Actions completed</span>'}
                 </div>
             `;
             grid.appendChild(card);
@@ -760,8 +943,8 @@
     async function updateStatus(id, newStatus) {
         const card = document.getElementById(`card-${id}`);
         if(card) {
-            card.style.opacity = '0.3';
-            card.innerText = "PROCESSING...";
+            card.style.opacity = '0.5';
+            card.style.pointerEvents = 'none';
         }
 
         try {
@@ -771,58 +954,18 @@
                 .eq('id', id);
 
             if (error) {
-                alert("Error: " + error.message);
-                loadAdminPanel();
-            } else {
-                console.log("Update Successful");
+                showToast("Error updating status", "error");
                 loadAdminPanel(); 
+            } else {
+                showToast(`Memory ${newStatus}!`, "success");
+                loadAdminPanel();
             }
         } catch (e) {
-            alert("System Error: " + e.message);
+            showToast("System Error", "error");
             loadAdminPanel();
         }
     }
 
-    // --- STATUS CHECKER ---
-    async function checkUserStatus() {
-        const nameInput = document.getElementById('status-search-input').value.trim();
-        const grid = document.getElementById('status-grid');
-        const empty = document.getElementById('status-empty');
-        
-        if(!nameInput) return alert("Please enter a name");
-        
-        grid.innerHTML = '';
-        empty.style.display = 'none';
-
-        const { data, error } = await supabaseClient
-            .from('memories')
-            .select('*')
-            .ilike('name', nameInput)
-            .order('created_at', { ascending: true });
-
-        if(error) return alert("Error checking status");
-
-        if(data.length === 0) {
-            empty.style.display = 'block';
-            return;
-        }
-
-        data.forEach(item => {
-            let badgeClass = 'badge-pending';
-            let statusText = 'Pending Review';
-            if(item.status === 'approved') { badgeClass = 'badge-approved'; statusText = 'APPROVED'; }
-            if(item.status === 'rejected') { badgeClass = 'badge-rejected'; statusText = 'REJECTED'; }
-
-            const div = document.createElement('div');
-            div.className = 'status-card';
-            div.innerHTML = `
-                <img src="${item.image_url}" />
-                <div style="font-size:12px; color:var(--text-muted);">${new Date(item.created_at).toLocaleDateString()}</div>
-                <span class="status-badge ${badgeClass}">${statusText}</span>
-            `;
-            grid.appendChild(div);
-        });
-    }
   </script>
 </body>
 </html>
