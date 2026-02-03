@@ -3,284 +3,826 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Technomantra 2026</title>
+  <title>Technomantra 2026 - Midnight Album</title>
 
   <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- Turn.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/3/turn.min.js"></script>
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400&family=Indie+Flower&display=swap" rel="stylesheet">
 
   <style>
+    :root {
+      /* YOUR NEW THEME COLORS */
+      --bg-color: #222831;       /* Deep Navy Background */
+      --card-bg: #31363F;       /* Dark Blue-Grey Panels */
+      --border: #76ABAE;         /* Teal Borders */
+      --text-main: #E1E8EF;       /* Off-White Text */
+      --text-muted: #9CA3AF;       /* Muted Teal Text */
+      --accent: #76ABAE;          /* Teal Accent */
+      --paper-color: #EEEEEE;      /* Light Grey Paper */
+      --ink-color: #222831;       /* Navy Ink */
+      --danger: #ef4444; 
+      --warning: #eab308;
+    }
+
     * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      font-family: 'Poppins', sans-serif;
-      background: radial-gradient(circle at top, #020617, #000);
-      color: #e5e7eb;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
       min-height: 100vh;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
     }
+    
+    /* --- Navigation --- */
+    nav {
+      width: 100%;
+      padding: 15px;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      background-color: rgba(0, 0, 0, 0.3);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
 
-    .container {
+    .nav-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 10px 24px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .nav-btn.active, .nav-btn:hover {
+      background-color: var(--accent); /* Teal */
+      color: var(--bg-color); /* Navy Text */
+      border-color: var(--accent);
+      font-weight: 700;
+    }
+
+    /* --- Main Container --- */
+    main {
+      flex: 1;
+      width: 100%;
+      max-width: 1000px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 60px 20px;
+    }
+    
+    .section-container {
+      width: 100%;
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .section-container.active { display: flex; justify-content: center; }
+
+    /* --- Upload Section --- */
+    .upload-layout {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 40px;
-      width: 90%;
+      gap: 60px;
+      width: 100%;
       max-width: 900px;
       align-items: center;
     }
 
-    .hero {
-      padding: 20px;
-    }
-
     .hero h1 {
-      font-size: 42px;
-      line-height: 1.2;
-      background: linear-gradient(90deg, #38bdf8, #22c55e);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 15px;
+      font-size: 48px;
+      letter-spacing: -1px;
+      color: var(--text-main);
+      margin-bottom: 20px;
+      font-weight: 300;
     }
 
     .hero p {
-      color: #94a3b8;
+      color: var(--text-muted);
       font-size: 16px;
+      line-height: 1.6;
       max-width: 400px;
     }
 
     .card {
-      background: rgba(2, 6, 23, 0.85);
-      backdrop-filter: blur(12px);
-      border-radius: 16px;
-      padding: 35px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.7);
-      border: 1px solid #1e293b;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      width: 100%;
     }
 
     label {
-      font-size: 13px;
-      color: #94a3b8;
-      margin-bottom: 6px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
       display: block;
+      font-family: 'JetBrains Mono', monospace;
     }
 
     input, textarea {
       width: 100%;
-      padding: 12px;
-      margin-bottom: 18px;
-      border-radius: 8px;
-      border: 1px solid #1e293b;
-      background: #020617;
-      color: #e5e7eb;
-      font-size: 14px;
-    }
-
-    input:focus, textarea:focus {
-      outline: none;
-      border-color: #38bdf8;
-      box-shadow: 0 0 0 1px #38bdf8;
-    }
-
-    textarea {
-      resize: none;
-    }
-
-    button {
-      width: 100%;
       padding: 14px;
-      border-radius: 10px;
+      margin-bottom: 24px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      background: rgba(0, 0, 0, 0.3);
+      color: var(--text-main);
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, textarea:focus { outline: none; border-color: var(--accent); }
+
+    button.action-btn {
+      width: 100%;
+      padding: 16px;
+      border-radius: 4px;
       border: none;
-      background: linear-gradient(90deg, #38bdf8, #22c55e);
-      color: #020617;
-      font-size: 16px;
-      font-weight: 600;
+      background-color: var(--accent);
+      color: var(--bg-color);
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
       cursor: pointer;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      transition: background 0.2s ease;
     }
 
-    button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 25px rgba(56,189,248,0.4);
-    }
+    button.action-btn:hover { opacity: 0.9; }
 
-    button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
+    /* --- Album & Flipbook --- */
+    #album-section {
+      flex-direction: column;
+      align-items: center;
+      min-height: 600px;
+      width: 100%;
     }
-
-    .popup {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.8);
+    
+    .flipbook-viewport {
+      overflow: hidden;
+      width: 100%;
+      max-width: 900px;
+      height: 600px;
+      display: flex;
       justify-content: center;
       align-items: center;
+      position: relative;
+      background: #1a1e29; /* Very dark container */
+    }
+    
+    .book-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      background: var(--card-bg);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
       z-index: 100;
+      transition: all 0.2s;
+    }
+    .book-nav:hover { background: var(--accent); color: var(--bg-color); border-color: var(--accent); }
+    .nav-prev { left: 20px; } .nav-next { right: 20px; }
+
+    #flipbook { width: 800px; height: 500px; transform-origin: top center; margin: 0 auto; }
+
+    /* --- PAGE STYLING (MIDNIGHT THEME) --- */
+    .page { 
+      width: 400px; 
+      height: 500px; 
+      background-color: var(--paper-color); /* Light Grey Paper */
+      color: var(--ink-color); /* Navy Ink */
+      overflow: hidden; 
+      box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.05); /* Deep inside shadow */
     }
 
-    .popup-content {
-      background: #020617;
-      padding: 30px;
-      border-radius: 16px;
+    .page.hard { 
+      background-color: var(--bg-color); /* Deep Navy Cover */
+      border: 1px solid var(--accent); /* Teal Stitching */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      /* Leather texture simulation */
+      background-image: linear-gradient(45deg, #222831 25%, #1f2937 25%, #222831 50%, #1f2937 50%, #222831 75%, #1f2937 75%, #222831 100%);
+    }
+
+    .cover-content {
       text-align: center;
-      width: 320px;
-      border: 1px solid #1e293b;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
     }
 
-    .popup-content img {
-      width: 100%;
-      border-radius: 12px;
-      margin-bottom: 12px;
+    .cover-title {
+      font-family: 'Indie Flower', cursive;
+      font-size: 60px;
+      font-weight: 400;
+      color: var(--text-main);
+      text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.2);
     }
 
-    .success {
-      color: #22c55e;
-      font-weight: 600;
-      margin-bottom: 4px;
+    .cover-subtitle {
+      font-family: 'Indie Flower', cursive;
+      font-size: 32px;
+      color: var(--accent); /* Teal Subtitle */
+      margin-top: 15px;
+      letter-spacing: 2px;
+      font-weight: bold;
+    }
+    
+    .back-cover-text {
+        font-family: 'Indie Flower', cursive;
+        font-size: 16px;
+        color: var(--text-muted);
+        letter-spacing: 2px;
     }
 
-    .filename {
-      font-size: 13px;
-      color: #94a3b8;
-      margin-bottom: 14px;
+    /* --- POLAROID WITH TEAL TAPE --- */
+    .polaroid-wrapper { 
+      background: #fff; /* Classic White Polaroid */
+      padding: 15px 15px 50px 15px; 
+      width: 85%; 
+      height: 85%; 
+      margin: 30px auto; 
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+      transform: rotate(0deg); 
+      position: relative;
     }
 
-    .toast {
-      position: fixed;
-      bottom: 25px;
-      right: 25px;
-      background: #020617;
-      border-left: 4px solid #22c55e;
-      padding: 14px 18px;
-      border-radius: 10px;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.6);
-      display: none;
-      z-index: 200;
+    /* Tape Effect (Teal) */
+    .polaroid-wrapper::before {
+        content: '';
+        position: absolute;
+        top: -12px; left: 15px;
+        width: 45px; height: 30px;
+        background: rgba(118, 171, 174, 0.6); /* Teal Tape */
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        transform: rotate(-3deg);
+        z-index: 10;
     }
 
-    @media (max-width: 768px) {
-      .container {
-        grid-template-columns: 1fr;
+    .polaroid-wrapper::after {
+        content: '';
+        position: absolute;
+        top: -12px; right: 15px;
+        width: 45px; height: 30px;
+        background: rgba(118, 171, 174, 0.6);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        transform: rotate(3deg);
+        z-index: 10;
+    }
+
+    .polaroid-img { 
+      width: 100%; 
+      flex-grow: 1; 
+      object-fit: cover; 
+      background: #f4f4f4; 
+      border: 1px solid #e0e0e0;
+      margin-bottom: 25px;
+      filter: sepia(0.1); /* Slight vintage tint */
+    }
+    
+    .polaroid-info { text-align: center; width: 100%; display: flex; flex-direction: column; gap: 10px; }
+    
+    .polaroid-name { 
+        font-family: 'Indie Flower', cursive; 
+        font-size: 28px; 
+        font-weight: bold; 
+        color: var(--ink-color); /* Navy Ink */
+    }
+    
+    .polaroid-feedback { 
+        font-family: 'Indie Flower', cursive; 
+        font-size: 18px; 
+        color: #444; 
+        font-style: italic;
+    }
+
+    /* --- ADMIN PANEL STYLES --- */
+    .login-box { width: 100%; max-width: 400px; text-align: center; }
+    
+    .admin-controls { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
+    .btn-toggle { 
+        background: var(--card-bg); 
+        color: var(--text-main); 
+        padding: 5px 10px; 
+        border: 1px solid var(--border); 
+        border-radius: 4px; 
+        cursor: pointer; 
+        font-size: 12px;
+    }
+    .btn-toggle.active { 
+        background: var(--accent); 
+        color: var(--bg-color); 
+        border-color: var(--accent);
+    }
+
+    .admin-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+        width: 100%;
+    }
+
+    .admin-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        padding: 15px;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .admin-card img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        margin-bottom: 10px;
+        border-radius: 4px;
+        border: 1px solid var(--paper-color);
+    }
+
+    .admin-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: auto;
+    }
+
+    .btn-approve {
+        flex: 1;
+        padding: 8px;
+        background: var(--accent);
+        border: none;
+        color: var(--bg-color);
+        cursor: pointer;
+        border-radius: 4px;
+        font-weight: bold;
+        font-family: 'JetBrains Mono', monospace;
+    }
+
+    .btn-reject {
+        flex: 1;
+        padding: 8px;
+        background: var(--danger);
+        border: none;
+        color: white;
+        cursor: pointer;
+        border-radius: 4px;
+        font-weight: bold;
+        font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* --- STATUS CHECKER STYLES --- */
+    .status-search-box {
+        width: 100%;
+        max-width: 400px;
+        display: flex;
+        gap: 10px;
+        margin-bottom: 30px;
+    }
+    .status-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+        width: 100%;
+    }
+    .status-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        padding: 15px;
+        border-radius: 8px;
         text-align: center;
-      }
-      .hero h1 { font-size: 34px; }
-      .hero p { margin: 0 auto; }
+    }
+    .status-card img { width: 100%; height: 150px; object-fit: cover; margin-bottom: 10px; border-radius: 4px; border: 1px solid var(--paper-color); }
+    .status-badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: bold;
+        text-transform: uppercase;
+        margin-top: 5px;
+    }
+    .badge-pending { background: var(--warning); color: #000; }
+    .badge-approved { background: var(--accent); color: var(--bg-color); }
+    .badge-rejected { background: var(--danger); color: #fff; }
+
+    .loading-spinner { color: var(--text-muted); font-size: 14px; margin-top: 40px; letter-spacing: 1px; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+    @media (max-width: 850px) {
+      .upload-layout { grid-template-columns: 1fr; text-align: center; gap: 40px; }
+      .hero p { margin: 0 auto 30px auto; }
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <div class="hero">
-      <h1>Technomantra 2026</h1>
-      <p>
-        Upload your image securely for <strong>Technomantra 2026</strong>.
-        Fast, safe, and powered by modern cloud technology.
-      </p>
+  <nav>
+    <button class="nav-btn active" onclick="switchTab('upload')">01 // UPLOAD</button>
+    <button class="nav-btn" onclick="switchTab('album')">02 // ALBUM</button>
+    <button class="nav-btn" onclick="switchTab('status')">03 // MY STATUS</button>
+    <button class="nav-btn" onclick="switchTab('admin')">04 // ADMIN</button>
+  </nav>
+
+  <main>
+    <!-- SECTION 1: UPLOAD -->
+    <div id="upload-section" class="section-container active">
+      <div class="upload-layout">
+        <div class="hero">
+          <h1>Technomantra<br>2026</h1>
+          <p>Secure upload gateway. Data is encrypted and archived. Photos require Admin approval.</p>
+        </div>
+        <div class="card">
+          <label for="name">Identifier</label>
+          <input type="text" id="name" placeholder="Enter your name" />
+          
+          <label for="image">Image File</label>
+          <input type="file" id="image" accept="image/*" />
+          
+          <label for="feedback">Feedback Entry</label>
+          <textarea id="feedback" placeholder="Write your thoughts..." rows="3"></textarea>
+          
+          <button id="uploadBtn" class="action-btn">Submit for Approval</button>
+        </div>
+      </div>
     </div>
 
-    <div class="card">
-      <label for="name">Your Name</label>
-      <input type="text" id="name" placeholder="Enter your name" />
-
-      <label for="image">Upload Image</label>
-      <input type="file" id="image" accept="image/*" />
-
-      <label for="feedback">Your Feedback</label>
-      <textarea id="feedback" placeholder="Write your feedback..." rows="3"></textarea>
-
-      <button id="uploadBtn">Upload Image</button>
+    <!-- SECTION 2: ALBUM -->
+    <div id="album-section" class="section-container">
+      <div class="flipbook-viewport">
+        <div class="book-nav nav-prev" onclick="goPrev()">&#8592;</div>
+        <div class="book-nav nav-next" onclick="goNext()">&#8594;</div>
+        <div id="flipbook"></div>
+      </div>      
+      <div id="loading-msg" class="loading-spinner" style="display:none;">INITIALIZING ALBUM...</div>
     </div>
-  </div>
 
-  <!-- Popup -->
-  <div class="popup" id="popup">
-    <div class="popup-content">
-      <img id="preview" />
-      <div class="success">✔ Upload Successful</div>
-      <div class="filename" id="fileNameText"></div>
-      <button id="closeBtn">Done</button>
+    <!-- SECTION 3: MY STATUS -->
+    <div id="status-section" class="section-container">
+        <div style="width: 100%; max-width: 800px;">
+            <h2 style="border-bottom: 1px solid var(--border); padding-bottom: 10px;">Check Upload Status</h2>
+            <div class="status-search-box">
+                <input type="text" id="status-search-input" placeholder="Enter your exact name..." />
+                <button class="action-btn" style="width:auto;" onclick="checkUserStatus()">CHECK</button>
+            </div>
+
+            <div id="status-grid" class="status-grid"></div>
+            <div id="status-empty" style="color: var(--text-muted); display:none;">No uploads found for this name.</div>
+        </div>
     </div>
-  </div>
 
-  <!-- Toast -->
-  <div class="toast" id="toast">Image uploaded successfully 🚀</div>
+    <!-- SECTION 4: ADMIN LOGIN & DASHBOARD -->
+    <div id="admin-section" class="section-container">
+        
+        <!-- LOGIN FORM -->
+        <div id="admin-login-view" class="login-box card">
+            <h2 style="margin-top:0;">Admin Access</h2>
+            <p style="color:var(--text-muted); margin-bottom:20px;">Enter passcode to view dashboard.</p>
+            <input type="password" id="admin-pass" placeholder="Enter Password" />
+            <button class="action-btn" onclick="attemptAdminLogin()">LOGIN</button>
+        </div>
+
+        <!-- DASHBOARD -->
+        <div id="admin-dashboard-view" style="width: 100%; max-width: 1000px; display:none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:20px;">
+                <h2 style="margin:0;">Admin Panel</h2>
+                <button onclick="logoutAdmin()" style="background:var(--card-bg); border:1px solid var(--border); color:var(--text-main); padding:5px 10px; border-radius:4px; cursor:pointer;">LOGOUT</button>
+            </div>
+            
+            <!-- TOGGLE BUTTONS -->
+            <div class="admin-controls">
+                <button class="btn-toggle active" id="btn-show-pending" onclick="setAdminFilter('pending')">Pending Only</button>
+                <button class="btn-toggle" id="btn-show-all" onclick="setAdminFilter('all')">Show History (All)</button>
+            </div>
+
+            <div id="admin-grid" class="admin-grid"></div>
+            <div id="admin-empty" style="color: var(--text-muted); display:none;">No items found.</div>
+        </div>
+    </div>
+  </main>
 
   <script>
+    // --- CONFIG ---
     const SUPABASE_URL = "https://worcmjutlantjutpdsjq.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_vK-bQ1JYqzhN4K6WFUP73Q_WiBeVfxu";
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const supabaseClient = window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_ANON_KEY
-    );
+    const flipbook = $("#flipbook");
+    let albumLoaded = false;
+    let isAdminLoggedIn = false;
+    let currentAdminFilter = 'pending';
 
-    const uploadBtn = document.getElementById("uploadBtn");
-    const toast = document.getElementById("toast");
+    // --- TAB LOGIC ---
+    function switchTab(tabName) {
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      document.querySelectorAll('.section-container').forEach(sec => sec.classList.remove('active'));
 
-    async function uploadImage() {
-      const name = document.getElementById("name").value.trim();
-      const file = document.getElementById("image").files[0];
-      const feedback = document.getElementById("feedback").value.trim();
-
-      if (!name || !file) {
-        alert("Please enter your name and select an image");
-        return;
+      if (tabName === 'upload') {
+        document.getElementById('upload-section').classList.add('active');
+      } else if (tabName === 'album') {
+        document.getElementById('album-section').classList.add('active');
+        loadAlbum(); 
+      } else if (tabName === 'status') {
+        document.getElementById('status-section').classList.add('active');
+      } else if (tabName === 'admin') {
+        document.getElementById('admin-section').classList.add('active');
+        if(isAdminLoggedIn) loadAdminPanel();
       }
-
-      uploadBtn.textContent = "Uploading...";
-      uploadBtn.disabled = true;
-
-      const ext = file.name.split('.').pop();
-      const filePath = `${name}_${Date.now()}.${ext}`;
-
-      // Upload to Supabase storage
-      const { error } = await supabaseClient.storage
-        .from("technomantra")
-        .upload(filePath, file);
-
-      if (error) {
-        alert(error.message);
-        uploadBtn.textContent = "Upload Image";
-        uploadBtn.disabled = false;
-        return;
-      }
-
-      const { data } = supabaseClient.storage
-        .from("technomantra")
-        .getPublicUrl(filePath);
-
-      // Show popup
-      document.getElementById("preview").src = data.publicUrl;
-      document.getElementById("fileNameText").textContent = file.name;
-      document.getElementById("popup").style.display = "flex";
-
-      // Show toast
-      toast.style.display = "block";
-      setTimeout(() => toast.style.display = "none", 3000);
-
-      // Reset form fields
-      document.getElementById("name").value = "";
-      document.getElementById("image").value = "";
-      document.getElementById("feedback").value = "";
-
-      uploadBtn.textContent = "Upload Image";
-      uploadBtn.disabled = false;
     }
 
-    function closePopup() {
-      document.getElementById("popup").style.display = "none";
+    function goNext() { $("#flipbook").turn("next"); }
+    function goPrev() { $("#flipbook").turn("previous"); }
+
+    // --- RESPONSIVE SCALING ---
+    function scaleBook() {
+        const width = $(window).width();
+        let scale = 1;
+        if (width < 850) scale = (width - 20) / 800;
+        $("#flipbook").css("transform", `scale(${scale})`);
+        $(".flipbook-viewport").css("height", `${500 * scale + 50}px`); 
+    }
+    $(window).resize(() => { if(albumLoaded) scaleBook(); });
+
+    // --- ADMIN LOGIN ---
+    function attemptAdminLogin() {
+        const pass = document.getElementById('admin-pass').value;
+        if(pass === "admin123") {
+            isAdminLoggedIn = true;
+            document.getElementById('admin-login-view').style.display = "none";
+            document.getElementById('admin-dashboard-view').style.display = "block";
+            loadAdminPanel();
+        } else {
+            alert("Incorrect Password");
+        }
     }
 
-    uploadBtn.addEventListener("click", uploadImage);
-    document.getElementById("closeBtn").addEventListener("click", closePopup);
+    function logoutAdmin() {
+        isAdminLoggedIn = false;
+        document.getElementById('admin-login-view').style.display = "block";
+        document.getElementById('admin-dashboard-view').style.display = "none";
+        document.getElementById('admin-pass').value = "";
+    }
+
+    function setAdminFilter(filter) {
+        currentAdminFilter = filter;
+        document.getElementById('btn-show-pending').classList.remove('active');
+        document.getElementById('btn-show-all').classList.remove('active');
+        
+        if(filter === 'pending') {
+            document.getElementById('btn-show-pending').classList.add('active');
+        } else {
+            document.getElementById('btn-show-all').classList.add('active');
+        }
+        loadAdminPanel();
+    }
+
+    // --- UPLOAD ---
+    document.getElementById("uploadBtn").addEventListener("click", async () => {
+        const name = document.getElementById("name").value.trim();
+        const file = document.getElementById("image").files[0];
+        const feedback = document.getElementById("feedback").value.trim();
+        if (!name || !file) { alert("Identifier and File required."); return; }
+        
+        const btn = document.getElementById("uploadBtn");
+        btn.textContent = "SUBMITTING...";
+        btn.disabled = true;
+
+        try {
+            const ext = file.name.split('.').pop();
+            const safeName = name.replace(/[^a-zA-Z0-9]/g, "_");
+            const filePath = `${safeName}_${Date.now()}.${ext}`;
+
+            const { error: uploadError } = await supabaseClient.storage.from('technomantra').upload(filePath, file);
+            if (uploadError) throw uploadError;
+
+            const { data: urlData } = supabaseClient.storage.from('technomantra').getPublicUrl(filePath);
+            const imageUrl = urlData.publicUrl;
+
+            const { error: dbError } = await supabaseClient
+                .from('memories')
+                .insert([{ name: name, feedback: feedback, image_url: imageUrl, status: 'pending' }]);
+
+            if (dbError) throw dbError;
+
+            alert("Upload Successful!");
+            document.getElementById("name").value = ""; document.getElementById("image").value = ""; document.getElementById("feedback").value = "";
+            albumLoaded = false; 
+
+        } catch (e) { alert("Error: " + e.message); } 
+        finally {
+            btn.textContent = "SUBMIT FOR APPROVAL";
+            btn.disabled = false;
+        }
+    });
+
+    // --- ALBUM (APPROVED ONLY) ---
+    async function loadAlbum() {
+      if (albumLoaded) return;
+      const loadingMsg = document.getElementById('loading-msg');
+      const flipbookEl = document.getElementById('flipbook');
+      loadingMsg.style.display = 'block';
+
+      try { if ($("#flipbook").turn("is")) { $("#flipbook").turn("destroy"); } } catch(e) {}
+      flipbookEl.innerHTML = ''; 
+
+      try {
+        const { data: memories, error } = await supabaseClient
+            .from('memories')
+            .select('*')
+            .eq('status', 'approved')
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        if(memories.length === 0) {
+            loadingMsg.innerText = "No approved memories found.";
+            return;
+        }
+
+        $("<div class='page hard'>").append(
+            $("<div class='cover-content'>").append(
+                $("<h1 class='cover-title'>").text("Technomantra"),
+                $("<div class='cover-subtitle'>").text("2026")
+            )
+        ).appendTo(flipbookEl);
+
+        memories.forEach(memory => {
+            const caption = memory.feedback ? `"${memory.feedback}"` : "";
+            $("<div class='page'>").append(
+                $("<div class='polaroid-wrapper'>").append(
+                    $("<img>").attr("src", memory.image_url).addClass("polaroid-img"),
+                    $("<div class='polaroid-info'>").append(
+                        $("<div class='polaroid-name'>").text(`- ${memory.name}`),
+                        $("<div class='polaroid-feedback'>").text(caption)
+                    )
+                )
+            ).appendTo(flipbookEl);
+        });
+
+        $("<div class='page hard'>").append(
+             $("<div class='cover-content'>").append(
+                $("<h1 class='cover-title' style='font-size:48px; letter-spacing:0;'>").text("2026"),
+                $("<div class='back-cover-text'>").text("ARCHIVED MEMORIES")
+             )
+        ).appendTo(flipbookEl);
+
+        setTimeout(() => {
+            flipbook.turn({ width: 800, height: 500, autoCenter: true, duration: 1200, acceleration: true, gradients: true, elevation: 50 });
+            scaleBook();
+            albumLoaded = true;
+            loadingMsg.style.display = 'none';
+        }, 100);
+
+      } catch (err) { console.error(err); loadingMsg.innerText = "Error loading"; }
+    }
+
+    // --- ADMIN PANEL ---
+    async function loadAdminPanel() {
+        const grid = document.getElementById('admin-grid');
+        const empty = document.getElementById('admin-empty');
+        grid.innerHTML = '';
+        empty.style.display = 'none';
+
+        let query = supabaseClient.from('memories').select('*').order('created_at', { ascending: true });
+        
+        if(currentAdminFilter === 'pending') {
+            query = query.eq('status', 'pending');
+        }
+
+        const { data: items, error } = await query;
+
+        if(error) return alert("Error fetching data");
+
+        if(items.length === 0) {
+            empty.style.display = 'block';
+            return;
+        }
+
+        items.forEach(item => {
+            let statusBadge = '';
+            if(item.status === 'approved') statusBadge = '<span style="color:var(--accent); font-weight:bold;">✔</span>';
+            if(item.status === 'rejected') statusBadge = '<span style="color:var(--danger); font-weight:bold;">✖</span>';
+
+            const card = document.createElement('div');
+            card.className = 'admin-card';
+            card.id = `card-${item.id}`;
+            card.innerHTML = `
+                <img src="${item.image_url}" />
+                <div style="display:flex; justify-content:space-between;">
+                    <div style="font-weight:bold; color:var(--text-main);">${item.name}</div>
+                    ${statusBadge}
+                </div>
+                <div style="font-size:12px; color:var(--text-muted);">${item.feedback || 'No feedback'}</div>
+                <div class="admin-actions">
+                    ${item.status === 'pending' ? `
+                        <button class="btn-approve" onclick="updateStatus('${item.id}', 'approved')">APPROVE</button>
+                        <button class="btn-reject" onclick="updateStatus('${item.id}', 'rejected')">REJECT</button>
+                    ` : '<span style="font-size:12px; color:var(--text-muted); width:100%; text-align:center;">No actions</span>'}
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    async function updateStatus(id, newStatus) {
+        const card = document.getElementById(`card-${id}`);
+        if(card) {
+            card.style.opacity = '0.3';
+            card.innerText = "PROCESSING...";
+        }
+
+        try {
+            const { data, error } = await supabaseClient
+                .from('memories')
+                .update({ status: newStatus })
+                .eq('id', id);
+
+            if (error) {
+                alert("Error: " + error.message);
+                loadAdminPanel();
+            } else {
+                console.log("Update Successful");
+                loadAdminPanel(); 
+            }
+        } catch (e) {
+            alert("System Error: " + e.message);
+            loadAdminPanel();
+        }
+    }
+
+    // --- STATUS CHECKER ---
+    async function checkUserStatus() {
+        const nameInput = document.getElementById('status-search-input').value.trim();
+        const grid = document.getElementById('status-grid');
+        const empty = document.getElementById('status-empty');
+        
+        if(!nameInput) return alert("Please enter a name");
+        
+        grid.innerHTML = '';
+        empty.style.display = 'none';
+
+        const { data, error } = await supabaseClient
+            .from('memories')
+            .select('*')
+            .ilike('name', nameInput)
+            .order('created_at', { ascending: true });
+
+        if(error) return alert("Error checking status");
+
+        if(data.length === 0) {
+            empty.style.display = 'block';
+            return;
+        }
+
+        data.forEach(item => {
+            let badgeClass = 'badge-pending';
+            let statusText = 'Pending Review';
+            if(item.status === 'approved') { badgeClass = 'badge-approved'; statusText = 'APPROVED'; }
+            if(item.status === 'rejected') { badgeClass = 'badge-rejected'; statusText = 'REJECTED'; }
+
+            const div = document.createElement('div');
+            div.className = 'status-card';
+            div.innerHTML = `
+                <img src="${item.image_url}" />
+                <div style="font-size:12px; color:var(--text-muted);">${new Date(item.created_at).toLocaleDateString()}</div>
+                <span class="status-badge ${badgeClass}">${statusText}</span>
+            `;
+            grid.appendChild(div);
+        });
+    }
   </script>
 </body>
 </html>
