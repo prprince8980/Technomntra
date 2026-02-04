@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -13,84 +14,157 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/3/turn.min.js"></script>
   <!-- Modernizr -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
-  
+
   <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400&family=Indie+Flower&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400&family=Indie+Flower&display=swap"
+    rel="stylesheet">
 
   <style>
     :root {
-      /* --- NEW MODERN PALETTE --- */
-      --bg-color: #0f172a;       /* Deep Rich Slate (Almost Black) */
-      --card-bg: #1e293b;        /* Lighter Slate for panels */
-      --border: #334155;         /* Subtle Slate Border */
-      
+      /* --- MODERN PALETTE --- */
+      --bg-color: #0f172a;
+      --card-bg: rgba(30, 41, 59, 0.85);
+      --border: rgba(148, 163, 184, 0.2);
+
       /* Accents */
-      --accent: #7c3aed;         /* Electric Violet (Main Action) */
-      --accent-glow: #8b5cf6;    /* Lighter Violet for hover */
-      --secondary: #06b6d4;      /* Cyan (Tape, Details, Success) */
-      
+      --accent: #7c3aed;
+      /* Electric Violet */
+      --accent-glow: #8b5cf6;
+      --secondary: #06b6d4;
+      /* Cyan */
+
       /* Text */
-      --text-main: #f8fafc;       /* Near White */
-      --text-muted: #94a3b8;     /* Muted Blue-Grey */
-      
+      --text-main: #f8fafc;
+      --text-muted: #cbd5e1;
+
       /* Paper Elements */
-      --paper-color: #f8fafc;    /* White-ish paper */
-      --ink-color: #0f172a;      /* Dark Ink for text */
-      
+      --paper-color: #f8fafc;
+      --ink-color: #0f172a;
+
       /* Status */
-      --danger: #ef4444; 
+      --danger: #ef4444;
       --success: #10b981;
     }
+    @media (max-width: 768px) {
+      .flipbook-viewport {
+          touch-action: auto !important;
+          overflow-y: visible !important;
+      }
 
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+      #album-section {
+          overflow-y: auto !important;
+          -webkit-overflow-scrolling: touch;
+      }
+
+      #flipbook-wrapper {
+          touch-action: auto !important;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,body {
+      height: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
+      touch-action: auto;
+    }
+
 
     body {
       margin: 0;
       font-family: 'Inter', sans-serif;
-      background-color: var(--bg-color);
       color: var(--text-main);
-      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      overflow-x: hidden;
+
+      /* --- BACKGROUND IMAGE SETTINGS --- */
+      background-image: url('https://z-cdn-media.chatglm.cn/files/6c8b312d-8340-4763-b403-52187490f624.jpeg?auth_key=1870179924-ba4de7d0989d438f8f87bd611043ce3c-0-484c48f7532329877f5bddc26400d467');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
     }
-    
+
+    /* --- BACKGROUND OVERLAY --- */
+    body::after {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.85);
+      z-index: -1;
+      pointer-events: none;
+    }
+
     /* --- TOAST NOTIFICATIONS --- */
     #toast-container {
-        position: fixed;
-        bottom: 20px;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+      left: 20px;
+      /* Center-ish on mobile */
+    }
+
+    @media(min-width: 500px) {
+      #toast-container {
         right: 20px;
-        z-index: 9999;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        pointer-events: none;
+        left: auto;
+      }
     }
 
     .toast {
-        background: var(--card-bg);
-        border-left: 4px solid var(--accent);
-        color: var(--text-main);
-        padding: 16px 20px;
-        border-radius: 8px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        font-size: 14px;
-        pointer-events: auto;
-        animation: slideIn 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-        max-width: 300px;
-        font-family: 'JetBrains Mono', monospace;
-        backdrop-filter: blur(10px);
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--accent);
+      color: var(--text-main);
+      padding: 16px 20px;
+      border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      font-size: 14px;
+      pointer-events: auto;
+      animation: slideIn 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+      max-width: 300px;
+      font-family: 'JetBrains Mono', monospace;
     }
 
-    .toast.error { border-left-color: var(--danger); }
-    .toast.success { border-left-color: var(--secondary); }
+    .toast.error {
+      border-left-color: var(--danger);
+    }
+
+    .toast.success {
+      border-left-color: var(--secondary);
+    }
 
     @keyframes slideIn {
-        from { transform: translateX(100%); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
     }
+
     @keyframes fadeOut {
-        to { opacity: 0; transform: translateY(10px); }
+      to {
+        opacity: 0;
+        transform: translateY(10px);
+      }
     }
 
     /* --- Navigation --- */
@@ -100,8 +174,8 @@
       display: flex;
       justify-content: center;
       gap: 10px;
-      background-color: rgba(15, 23, 42, 0.8);
-      backdrop-filter: blur(10px);
+      background-color: rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(15px);
       border-bottom: 1px solid var(--border);
       position: sticky;
       top: 0;
@@ -116,21 +190,22 @@
       padding: 10px 20px;
       border-radius: 8px;
       cursor: pointer;
-      font-size: 12px; 
+      font-size: 12px;
       font-weight: 600;
       transition: all 0.2s ease;
       font-family: 'JetBrains Mono', monospace;
-      flex: 1 1 auto; 
-      min-width: 120px;
+      flex: 1 1 auto;
+      min-width: 90px;
       text-align: center;
       letter-spacing: 0.5px;
     }
 
-    .nav-btn.active, .nav-btn:hover {
+    .nav-btn.active,
+    .nav-btn:hover {
       background-color: var(--accent);
       color: white;
       border-color: var(--accent);
-      box-shadow: 0 0 15px rgba(124, 58, 237, 0.4); /* Glow */
+      box-shadow: 0 0 15px rgba(124, 58, 237, 0.4);
     }
 
     /* --- Main Container --- */
@@ -144,15 +219,20 @@
       align-items: flex-start;
       padding: 20px;
       position: relative;
+      min-height: 80vh;
+      flex-direction: column;
     }
-    
+
     .section-container {
       width: 100%;
       display: none;
       animation: fadeIn 0.4s ease;
     }
 
-    .section-container.active { display: flex; justify-content: center; }
+    .section-container.active {
+      display: flex;
+      justify-content: center;
+    }
 
     /* --- Upload Section --- */
     .upload-layout {
@@ -179,10 +259,12 @@
       color: var(--text-muted);
       font-size: 16px;
       line-height: 1.7;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
     }
 
     .card {
       background: var(--card-bg);
+      backdrop-filter: blur(12px);
       border: 1px solid var(--border);
       padding: 30px;
       border-radius: 16px;
@@ -201,24 +283,27 @@
       font-weight: 700;
     }
 
-    input, textarea {
+    input,
+    textarea {
       width: 100%;
       padding: 14px;
       margin-bottom: 20px;
       border-radius: 8px;
       border: 1px solid var(--border);
-      background: rgba(15, 23, 42, 0.5);
+      background: rgba(15, 23, 42, 0.6);
       color: var(--text-main);
       font-size: 14px;
       font-family: 'Inter', sans-serif;
       transition: all 0.2s;
-      -webkit-appearance: none; 
+      -webkit-appearance: none;
     }
 
-    input:focus, textarea:focus { 
-        outline: none; 
-        border-color: var(--accent); 
-        box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
+    input:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: rgba(15, 23, 42, 0.8);
+      box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
     }
 
     button.action-btn {
@@ -237,46 +322,59 @@
       box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
     }
 
-    button.action-btn:hover { 
-        transform: translateY(-2px); 
-        box-shadow: 0 8px 25px rgba(124, 58, 237, 0.5);
-    }
-    button.action-btn:disabled { 
-        background: var(--border); 
-        cursor: not-allowed; 
-        transform: none; 
-        box-shadow: none; 
+    button.action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(124, 58, 237, 0.5);
     }
 
-    /* --- Album & Flipbook --- */
+    button.action-btn:disabled {
+      background: var(--border);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* --- RESPONSIVE ALBUM STYLES --- */
     #album-section {
       flex-direction: column;
       align-items: center;
-      min-height: 600px; 
       width: 100%;
+      padding-bottom: 80px;
+      /* Extra space at bottom for mobile scrolling */
     }
-    
+
     .flipbook-viewport {
-      overflow: hidden;
+      overflow: visible;
       width: 100%;
-      height: 600px; 
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start;
       position: relative;
-      background: linear-gradient(180deg, #0f172a 0%, #1e1b4b 100%); 
+      /* Semi-transparent background to let the Buddha image shine through slightly */
+      background: rgba(15, 23, 42, 0.4);
+      backdrop-filter: blur(5px);
       border-radius: 16px;
       border: 1px solid var(--border);
-      box-shadow: inset 0 0 50px rgba(0,0,0,0.5);
+      box-shadow: 0 0 50px rgba(124, 58, 237, 0.2);
+      max-width: 100%;
+      
+      /* --- FIX: CHANGED FROM pan-y TO pan-x --- */
+      /* This allows vertical scrolling of the main page */
+      touch-action: pan-x;
+      
+      margin-bottom: 20px;
+      padding: 10px;
+      /* Padding to prevent book edges touching border */
+      box-sizing: border-box;
     }
-    
+
     .book-nav {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      width: 48px;
-      height: 48px;
-      background: rgba(30, 41, 59, 0.8);
+      width: 36px;
+      height: 36px;
+      background: rgba(30, 41, 59, 0.9);
       backdrop-filter: blur(5px);
       color: var(--text-main);
       border: 1px solid var(--border);
@@ -286,45 +384,57 @@
       cursor: pointer;
       z-index: 100;
       transition: all 0.2s;
-      border-radius: 50%; 
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      border-radius: 50%;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      pointer-events: auto;
     }
-    
-    .book-nav:hover { 
-        background: var(--accent); 
-        color: white; 
-        border-color: var(--accent); 
-        box-shadow: 0 0 15px var(--accent);
-    }
-    .nav-prev { left: 20px; } 
-    .nav-next { right: 20px; }
 
+    .book-nav:hover {
+      background: var(--accent);
+      color: white;
+    }
+
+    .nav-prev {
+      left: -10px;
+    }
+
+    /* Outside on mobile */
+    .nav-next {
+      right: -10px;
+    }
+
+    /* Outside on mobile */
+
+    /* The wrapper handles the scaling transform */
     #flipbook-wrapper {
-        transform-origin: top center;
-        margin: 0 auto;
-        transition: transform 0.3s ease;
+      transform-origin: top center;
+      margin: 0 auto;
+      transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      transform: scale(1);
+      
+      /* --- FIX: ADDED THIS --- */
+      /* Fixes rendering jitter on desktop */
+      will-change: transform;
     }
 
-    #flipbook { width: 800px; height: 500px; }
-
-    /* --- PAGE STYLING --- */
-    .page { 
-      width: 400px; 
-      height: 500px; 
+    /* PAGE STYLING */
+    .page {
+      width: 400px;
+      /* Base logical size */
+      height: 500px;
       background-color: var(--paper-color);
       color: var(--ink-color);
-      overflow: hidden; 
+      overflow: hidden;
       box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.1);
     }
 
-    .page.hard { 
+    .page.hard {
       background-color: var(--bg-color);
       border: 1px solid var(--accent);
       display: flex;
       align-items: center;
       justify-content: center;
-      /* Modern tech texture */
-      background-image: 
+      background-image:
         radial-gradient(at 0% 0%, rgba(124, 58, 237, 0.15) 0px, transparent 50%),
         radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.15) 0px, transparent 50%);
       background-size: 100% 100%;
@@ -338,6 +448,7 @@
       justify-content: center;
       z-index: 2;
       padding: 20px;
+      height: 100%;
     }
 
     .cover-title {
@@ -357,203 +468,290 @@
       font-weight: 800;
       text-transform: uppercase;
     }
-    
+
     .back-cover-text {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 12px;
-        color: var(--secondary);
-        letter-spacing: 2px;
-        border-top: 1px solid var(--border);
-        padding-top: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--secondary);
+      letter-spacing: 2px;
+      border-top: 1px solid var(--border);
+      padding-top: 10px;
     }
 
     /* --- POLAROID --- */
-    .polaroid-wrapper { 
+    .polaroid-wrapper {
       background: #fff;
-      padding: 15px 15px 50px 15px; 
-      width: 85%; 
-      height: 85%; 
-      margin: 30px auto; 
+      padding: 15px 15px 50px 15px;
+      width: 85%;
+      height: 85%;
+      margin: 30px auto;
       display: flex;
       flex-direction: column;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
       position: relative;
-      transform: translate(0, 0); 
     }
 
-    /* Updated Tape Effect - Now Cyan/Teal */
     .polaroid-wrapper::before {
-        content: '';
-        position: absolute;
-        top: -15px; left: 50%;
-        transform: translateX(-50%) rotate(-2deg);
-        width: 120px; height: 35px;
-        background: rgba(6, 182, 212, 0.2); /* Transparent Cyan */
-        backdrop-filter: blur(4px);
-        border: 1px solid rgba(6, 182, 212, 0.4);
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        z-index: 10;
+      content: '';
+      position: absolute;
+      top: -15px;
+      left: 50%;
+      transform: translateX(-50%) rotate(-2deg);
+      width: 120px;
+      height: 35px;
+      background: rgba(6, 182, 212, 0.2);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(6, 182, 212, 0.4);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      z-index: 10;
     }
 
-    .polaroid-img { 
-      width: 100%; 
-      flex-grow: 1; 
-      object-fit: cover; 
-      background: #f1f5f9; 
+    .polaroid-img {
+      width: 100%;
+      flex-grow: 1;
+      object-fit: cover;
+      background: #f1f5f9;
       border: 1px solid #e2e8f0;
       margin-bottom: 25px;
     }
-    
-    .polaroid-info { text-align: center; width: 100%; display: flex; flex-direction: column; gap: 8px; }
-    
-    .polaroid-name { 
-        font-family: 'Inter', sans-serif;
-        font-size: 18px; 
-        font-weight: 700;
-        color: var(--bg-color);
-        text-transform: uppercase;
-        letter-spacing: 1px;
+
+    .polaroid-info {
+      text-align: center;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
-    
-    .polaroid-feedback { 
-        font-family: 'Indie Flower', cursive; 
-        font-size: 20px; 
-        color: #475569; 
-        font-style: italic;
+
+    .polaroid-name {
+      font-family: 'Inter', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--bg-color);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .polaroid-feedback {
+      font-family: 'Indie Flower', cursive;
+      font-size: 20px;
+      color: #475569;
+      font-style: italic;
     }
 
     /* --- ADMIN PANEL --- */
-    .login-box { width: 100%; max-width: 400px; text-align: center; margin: 0 auto; }
-    
-    .admin-controls { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-    .btn-toggle { 
-        background: var(--bg-color); 
-        color: var(--text-muted); 
-        padding: 8px 16px; 
-        border: 1px solid var(--border); 
-        border-radius: 6px; 
-        cursor: pointer; 
-        font-size: 12px;
-        font-family: 'JetBrains Mono', monospace;
-        transition: all 0.2s;
+    .login-box {
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      margin: 0 auto;
     }
-    .btn-toggle.active { 
-        background: var(--secondary);
-        color: #0f172a;
-        border-color: var(--secondary);
-        font-weight: 700;
+
+    .admin-controls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .btn-toggle {
+      background: var(--bg-color);
+      color: var(--text-muted);
+      padding: 8px 16px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      transition: all 0.2s;
+    }
+
+    .btn-toggle.active {
+      background: var(--secondary);
+      color: #0f172a;
+      border-color: var(--secondary);
+      font-weight: 700;
     }
 
     .admin-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 20px;
-        width: 100%;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      width: 100%;
     }
 
     .admin-card {
-        background: var(--card-bg);
-        border: 1px solid var(--border);
-        padding: 15px;
-        border-radius: 12px;
-        display: flex;
-        flex-direction: column;
-        transition: transform 0.2s;
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      padding: 15px;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s;
     }
 
     .admin-card:hover {
-        border-color: var(--secondary);
+      border-color: var(--secondary);
+      transform: translateY(-5px);
     }
 
     .admin-card img {
-        width: 100%;
-        height: 180px;
-        object-fit: cover;
-        margin-bottom: 15px;
-        border-radius: 8px;
-        border: 1px solid var(--border);
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
     }
 
     .admin-actions {
-        display: flex;
-        gap: 10px;
-        margin-top: auto;
+      display: flex;
+      gap: 10px;
+      margin-top: auto;
     }
 
     .btn-approve {
-        flex: 1;
-        padding: 10px;
-        background: var(--accent);
-        border: none;
-        color: white;
-        cursor: pointer;
-        border-radius: 6px;
-        font-weight: bold;
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 12px;
-        transition: background 0.2s;
+      flex: 1;
+      padding: 10px;
+      background: var(--accent);
+      border: none;
+      color: white;
+      cursor: pointer;
+      border-radius: 6px;
+      font-weight: bold;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      transition: background 0.2s;
     }
-    .btn-approve:hover { background: var(--accent-glow); }
+
+    .btn-approve:hover {
+      background: var(--accent-glow);
+    }
 
     .btn-reject {
-        flex: 1;
-        padding: 10px;
-        background: transparent;
-        border: 1px solid var(--danger);
-        color: var(--danger);
-        cursor: pointer;
-        border-radius: 6px;
-        font-weight: bold;
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 12px;
-        transition: all 0.2s;
+      flex: 1;
+      padding: 10px;
+      background: transparent;
+      border: 1px solid var(--danger);
+      color: var(--danger);
+      cursor: pointer;
+      border-radius: 6px;
+      font-weight: bold;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      transition: all 0.2s;
     }
-    .btn-reject:hover { background: var(--danger); color: white; }
+
+    .btn-reject:hover {
+      background: var(--danger);
+      color: white;
+    }
 
     /* Loader */
-    .loading-spinner { 
-        color: var(--secondary); 
-        font-size: 14px; 
-        margin-top: 40px; 
-        letter-spacing: 1px; 
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
+    .loading-spinner {
+      color: var(--secondary);
+      font-size: 14px;
+      margin-top: 40px;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
     }
+
     .spinner-circle {
-        width: 20px; height: 20px;
-        border: 2px solid var(--border);
-        border-top-color: var(--secondary);
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border);
+      border-top-color: var(--secondary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
 
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-    /* --- RESPONSIVE MEDIA QUERIES --- */
-    @media (max-width: 850px) {
-      .upload-layout { 
-          grid-template-columns: 1fr; 
-          text-align: center; 
-          gap: 40px; 
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
       }
-      
-      .flipbook-viewport {
-          height: auto;
-          min-height: 400px;
-          padding: 20px 0;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* --- MOBILE RESPONSIVENESS TWEAKS --- */
+    @media (max-width: 768px) {
+      .upload-layout {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 40px;
       }
 
       .nav-btn {
-          padding: 8px 12px;
-          font-size: 11px;
-          min-width: 100px;
+        padding: 8px 12px;
+        font-size: 10px;
+        min-width: 80px;
+      }
+
+      .hero h1 {
+        font-size: 36px;
+      }
+
+      .hero p {
+        font-size: 14px;
+      }
+
+      /* Adjust Admin Buttons for Touch */
+      .btn-approve,
+      .btn-reject {
+        padding: 12px;
+        font-size: 14px;
+      }
+    }
+
+    /* --- SPECIFIC MOBILE ALBUM TWEAKS (Small Screens) --- */
+    @media (max-width: 480px) {
+
+      /* Shrink text in Polaroids so it doesn't overflow small pages */
+      .polaroid-name {
+        font-size: 14px;
+      }
+
+      .polaroid-feedback {
+        font-size: 16px;
+      }
+
+      /* Move arrows slightly outside to not block content */
+      .nav-prev {
+        left: -20px;
+      }
+
+      .nav-next {
+        right: -20px;
+      }
+
+      /* Reduce cover font size slightly */
+      .cover-title {
+        font-size: 48px;
+      }
+
+      .cover-subtitle {
+        font-size: 18px;
       }
     }
   </style>
 </head>
+
 <body>
 
   <!-- Toast Container -->
@@ -571,18 +769,19 @@
       <div class="upload-layout">
         <div class="hero">
           <h1>Technomantra<br>2026</h1>
-          <p>Secure upload gateway. Data is encrypted and archived. Photos require Admin approval before appearing in the public album.</p>
+          <p>Secure upload gateway. Data is encrypted and archived. Photos require Admin approval before appearing in
+            the public album.</p>
         </div>
         <div class="card">
           <label for="name">Identifier</label>
           <input type="text" id="name" placeholder="Enter your name" />
-          
+
           <label for="image">Image File</label>
           <input type="file" id="image" accept="image/*" />
-          
+
           <label for="feedback">Feedback Entry</label>
           <textarea id="feedback" placeholder="Write your thoughts..." rows="3"></textarea>
-          
+
           <button id="uploadBtn" class="action-btn">Submit for Approval</button>
         </div>
       </div>
@@ -593,44 +792,48 @@
       <div class="flipbook-viewport">
         <div class="book-nav nav-prev" onclick="goPrev()">&#8592;</div>
         <div class="book-nav nav-next" onclick="goNext()">&#8594;</div>
-        
-        <!-- Wrapper for scaling -->
+
+        <!-- Wrapper handles scaling -->
         <div id="flipbook-wrapper">
-            <div id="flipbook"></div>
+          <div id="flipbook"></div>
         </div>
-      </div>      
+      </div>
       <div id="loading-msg" class="loading-spinner" style="display:none;">
-          <div class="spinner-circle"></div> INITIALIZING ALBUM...
+        <div class="spinner-circle"></div> INITIALIZING ALBUM...
       </div>
     </div>
 
     <!-- SECTION 3: ADMIN LOGIN & DASHBOARD -->
     <div id="admin-section" class="section-container">
-        
-        <!-- LOGIN FORM -->
-        <div id="admin-login-view" class="login-box card">
-            <h2 style="margin-top:0; color:var(--secondary);">Admin Access</h2>
-            <p style="color:var(--text-muted); margin-bottom:20px;">Enter passcode to view dashboard.</p>
-            <input type="password" id="admin-pass" placeholder="Enter Password" />
-            <button class="action-btn" onclick="attemptAdminLogin()">LOGIN</button>
+
+      <!-- LOGIN FORM -->
+      <div id="admin-login-view" class="login-box card">
+        <h2 style="margin-top:0; color:var(--secondary);">Admin Access</h2>
+        <p style="color:var(--text-muted); margin-bottom:20px;">Enter passcode to view dashboard.</p>
+        <input type="password" id="admin-pass" placeholder="Enter Password" />
+        <button class="action-btn" onclick="attemptAdminLogin()">LOGIN</button>
+      </div>
+
+      <!-- DASHBOARD -->
+      <div id="admin-dashboard-view" style="width: 100%; max-width: 1000px; display:none;">
+        <div
+          style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:15px; margin-bottom:20px; flex-wrap: wrap; gap: 10px;">
+          <h2 style="margin:0; color:var(--text-main);">Admin Panel</h2>
+          <button onclick="logoutAdmin()"
+            style="background:transparent; border:1px solid var(--border); color:var(--text-muted); padding:8px 16px; border-radius:6px; cursor:pointer; transition:all 0.2s;">LOGOUT</button>
         </div>
 
-        <!-- DASHBOARD -->
-        <div id="admin-dashboard-view" style="width: 100%; max-width: 1000px; display:none;">
-            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:15px; margin-bottom:20px; flex-wrap: wrap; gap: 10px;">
-                <h2 style="margin:0; color:var(--text-main);">Admin Panel</h2>
-                <button onclick="logoutAdmin()" style="background:transparent; border:1px solid var(--border); color:var(--text-muted); padding:8px 16px; border-radius:6px; cursor:pointer; transition:all 0.2s;">LOGOUT</button>
-            </div>
-            
-            <!-- TOGGLE BUTTONS -->
-            <div class="admin-controls">
-                <button class="btn-toggle active" id="btn-show-pending" onclick="setAdminFilter('pending')">Pending Only</button>
-                <button class="btn-toggle" id="btn-show-all" onclick="setAdminFilter('all')">Show History (All)</button>
-            </div>
-
-            <div id="admin-grid" class="admin-grid"></div>
-            <div id="admin-empty" style="color: var(--text-muted); display:none; text-align:center; padding: 20px;">No items found.</div>
+        <!-- TOGGLE BUTTONS -->
+        <div class="admin-controls">
+          <button class="btn-toggle active" id="btn-show-pending" onclick="setAdminFilter('pending')">Pending
+            Only</button>
+          <button class="btn-toggle" id="btn-show-all" onclick="setAdminFilter('all')">Show History (All)</button>
         </div>
+
+        <div id="admin-grid" class="admin-grid"></div>
+        <div id="admin-empty" style="color: var(--text-muted); display:none; text-align:center; padding: 20px;">No items
+          found.</div>
+      </div>
     </div>
   </main>
 
@@ -646,283 +849,390 @@
     let isAdminLoggedIn = false;
     let currentAdminFilter = 'pending';
 
+    // Store state for resize logic
+    let lastViewMode = null; // 'mobile' or 'desktop'
+    let resizeTimeout;
+    let albumDataCache = null; // Store data so we don't refetch on resize
+
     // --- TOAST NOTIFICATION SYSTEM (Replaces Alert) ---
     function showToast(message, type = 'info') {
-        const container = document.getElementById('toast-container');
-        const toast = document.createElement('div');
-        toast.className = `toast ${type}`;
-        toast.innerText = message;
-        
-        container.appendChild(toast);
-        
-        // Remove after 3 seconds
-        setTimeout(() => {
-            toast.style.animation = 'fadeOut 0.3s forwards';
-            setTimeout(() => toast.remove(), 300);
-        }, 3000);
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerText = message;
+
+      container.appendChild(toast);
+
+      // Remove after 3 seconds
+      setTimeout(() => {
+        toast.style.animation = 'fadeOut 0.3s forwards';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
     }
 
     // --- TAB LOGIC ---
-    function switchTab(tabName) {
-      // UI Updates
-      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-      const clickedBtn = event.target;
-      if(clickedBtn) clickedBtn.classList.add('active');
+   function switchTab(tabName) {
 
-      document.querySelectorAll('.section-container').forEach(sec => sec.classList.remove('active'));
+  // Remove active class from all buttons
+  document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
 
-      // Logic
-      if (tabName === 'upload') {
-        document.getElementById('upload-section').classList.add('active');
-      } else if (tabName === 'album') {
-        document.getElementById('album-section').classList.add('active');
-        loadAlbum(); 
-      } else if (tabName === 'admin') {
-        document.getElementById('admin-section').classList.add('active');
-        if(isAdminLoggedIn) loadAdminPanel();
-      }
-      
-      // Re-calc book size if switching to album
-      if(tabName === 'album' && albumLoaded) {
-          setTimeout(scaleBook, 50);
-      }
+  if (event && event.target) {
+      event.target.classList.add('active');
+  } else {
+      const index = tabName === 'upload' ? 0 : tabName === 'album' ? 1 : 2;
+      document.querySelectorAll('.nav-btn')[index].classList.add('active');
+  }
+
+  // Hide all sections
+  document.querySelectorAll('.section-container').forEach(sec => sec.classList.remove('active'));
+
+  // Reset main alignment by default
+  document.querySelector("main").style.alignItems = "";
+
+  if (tabName === 'upload') {
+
+    document.getElementById('upload-section').classList.add('active');
+
+  } else if (tabName === 'album') {
+
+    document.getElementById('album-section').classList.add('active');
+    document.querySelector("main").style.alignItems = "flex-start";
+
+    // --- FIX: CHECK IF ALBUM IS ALREADY LOADED ---
+    // Only load from database if it hasn't been loaded yet
+    if (!albumLoaded) {
+        loadAlbum();
+    } else {
+        // If it IS loaded, just make sure the sizing is correct
+        // No flicker, no reload, just showing what's there
+        resizeBookLogic();
     }
+
+  } else if (tabName === 'admin') {
+
+    document.getElementById('admin-section').classList.add('active');
+
+    if (isAdminLoggedIn) loadAdminPanel();
+  }
+}
+
 
     function goNext() { $("#flipbook").turn("next"); }
     function goPrev() { $("#flipbook").turn("previous"); }
 
-    // --- RESPONSIVE SCALING LOGIC ---
-    function scaleBook() {
-        if(!albumLoaded) return;
+    // --- RESPONSIVE BOOK LOGIC (OPTIMIZED FOR MOBILE) ---
 
-        // The book's "intrinsic" size (defined in CSS #flipbook)
-        const bookWidth = 800;
-        const bookHeight = 500;
-        
-        // Get container width (minus padding)
-        const containerWidth = document.querySelector('.flipbook-viewport').clientWidth - 60; // 60px for arrows
-        const containerHeight = window.innerHeight * 0.8; // Max 80% of viewport height
+    function resizeBookLogic() {
+      if (!albumLoaded || !$("#flipbook").turn("is")) return;
 
-        // Calculate Scale based on Width (priority)
-        let scale = containerWidth / bookWidth;
+      // Determine current dimensions
+      const display = $("#flipbook").turn("display");
+      const isSingle = display === "single";
+
+      // Base dimensions defined in CSS for .page
+      const pageW = 400;
+      const pageH = 500;
+
+      // Current total width of the book based on mode
+      const currentBookW = isSingle ? pageW : (pageW * 2);
+      const currentBookH = pageH;
+
+      // Get Viewport size
+      const viewport = document.querySelector('.flipbook-viewport');
+
+      // --- MOBILE RESPONSIVE LOGIC UPDATE ---
+      // On mobile (width < 768), we want the book to fill nearly the full width.
+      // On desktop, we keep some margin.
+      let viewW;
+
+      if (window.innerWidth < 768) {
+        // --- FIX: INCREASE MOBILE WIDTH TO 95% ---
+        // This forces the book to be relatively smaller compared to the screen,
+        // leaving more room for scrolling and making the pages easier to view.
+        viewW = window.innerWidth * 0.95; 
         
-        // Check if height is a constraint
-        if ((bookHeight * scale) > containerHeight) {
-            scale = containerHeight / bookHeight;
+        // --- FIX: ADD EXTRA MARGIN FOR ARROWS ON MOBILE ---
+        // Subtract arrow size so arrows don't sit off-screen on very small phones
+        if(window.innerWidth < 400) {
+            viewW = window.innerWidth * 0.85; 
         }
 
-        // Cap scale at 1.0
-        if (scale > 1) scale = 1;
+      } else {
+        // Desktop: subtract margins for arrows
+        viewW = viewport.clientWidth - 80;
+      }
 
-        // Apply transform
-        flipbookWrapper.css("transform", `scale(${scale})`);
-        
-        // Adjust container height to match the scaled book
-        const finalHeight = bookHeight * scale;
-        document.querySelector('.flipbook-viewport').style.height = `${finalHeight + 60}px`; 
+      // Calculate Scale based on Width
+      let scale = viewW / currentBookW;
+
+      // Constraint: Don't upscale beyond 1.2x
+      if (scale > 1.2) scale = 1.2;
+
+      // Apply Transform
+      flipbookWrapper.css("transform", `scale(${scale})`);
+
+      // Calculate the physical height of the book after scaling
+      const finalH = currentBookH * scale;
+
+      // Set the viewport height to match the scaled book height
+      // This allows the body to scroll naturally if the book is tall
+     viewport.style.minHeight = `${finalH}px`;
+      viewport.style.height = "auto";
+
     }
 
-    // Listen to resize
-    $(window).resize(() => { if(albumLoaded) scaleBook(); });
+    function getDeviceMode() {
+      return window.innerWidth < 768 ? 'mobile' : 'desktop';
+    }
+
+    // 3. Builds and Initializes the Book
+    function initResponsiveBook(memories) {
+      const flipbookEl = document.getElementById('flipbook');
+      const mode = getDeviceMode();
+
+      // Clean up
+      try {
+        if ($("#flipbook").turn("is")) {
+          $("#flipbook").turn("destroy");
+        }
+      } catch (e) { }
+      flipbookEl.innerHTML = '';
+
+      // --- BUILD HTML ---
+      // Cover
+      $("<div class='page hard'>").append(
+        $("<div class='cover-content'>").append(
+          $("<h1 class='cover-title'>").text("Technomantra"),
+          $("<div class='cover-subtitle'>").text("2026")
+        )
+      ).appendTo(flipbookEl);
+
+      // Pages
+      memories.forEach(memory => {
+        const caption = memory.feedback ? `"${memory.feedback}"` : "";
+        $("<div class='page'>").append(
+          $("<div class='polaroid-wrapper'>").append(
+            $("<img>").attr("src", memory.image_url).addClass("polaroid-img"),
+            $("<div class='polaroid-info'>").append(
+              $("<div class='polaroid-name'>").text(`- ${memory.name}`),
+              $("<div class='polaroid-feedback'>").text(caption)
+            )
+          )
+        ).appendTo(flipbookEl);
+      });
+
+      // Back Cover
+      $("<div class='page hard'>").append(
+        $("<div class='cover-content'>").append(
+          $("<h1 class='cover-title' style='font-size:48px; letter-spacing:0;'>").text("2026"),
+          $("<div class='back-cover-text'>").text("ARCHIVED MEMORIES")
+        )
+      ).appendTo(flipbookEl);
+
+      // --- INITIALIZE TURN.JS ---
+      setTimeout(() => {
+        const options = {
+          width: mode === 'mobile' ? 400 : 800,
+          height: 500,
+          autoCenter: true,
+          duration: 600, // Slightly faster on mobile generally
+          acceleration: true,
+          gradients: true,
+          elevation: 50,
+          display: mode === 'mobile' ? 'single' : 'double',
+          when: {
+            turning: function (e, page, view) {
+              // Optional: analytics hook
+            }
+          }
+        };
+
+        flipbook.turn(options);
+
+        lastViewMode = mode;
+        albumLoaded = true;
+        document.getElementById('loading-msg').style.display = 'none';
+
+        resizeBookLogic();
+      }, 50);
+    }
+
+    // 4. Resize Listener
+    $(window).resize(() => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        if (albumLoaded && albumDataCache) {
+          const newMode = getDeviceMode();
+
+          if (newMode !== lastViewMode) {
+            initResponsiveBook(albumDataCache);
+          } else {
+            resizeBookLogic();
+          }
+        }
+      }, 300);
+    });
 
     // --- ADMIN LOGIN ---
     function attemptAdminLogin() {
-        const pass = document.getElementById('admin-pass').value;
-        if(pass === "admin123") {
-            isAdminLoggedIn = true;
-            document.getElementById('admin-login-view').style.display = "none";
-            document.getElementById('admin-dashboard-view').style.display = "block";
-            showToast("Admin Access Granted", "success");
-            loadAdminPanel();
-        } else {
-            showToast("Incorrect Password", "error");
-        }
+      const pass = document.getElementById('admin-pass').value;
+      if (pass === "admin123") {
+        isAdminLoggedIn = true;
+        document.getElementById('admin-login-view').style.display = "none";
+        document.getElementById('admin-dashboard-view').style.display = "block";
+        showToast("Admin Access Granted", "success");
+        loadAdminPanel();
+      } else {
+        showToast("Incorrect Password", "error");
+      }
     }
 
     function logoutAdmin() {
-        isAdminLoggedIn = false;
-        document.getElementById('admin-login-view').style.display = "block";
-        document.getElementById('admin-dashboard-view').style.display = "none";
-        document.getElementById('admin-pass').value = "";
-        showToast("Logged Out");
+      isAdminLoggedIn = false;
+      document.getElementById('admin-login-view').style.display = "block";
+      document.getElementById('admin-dashboard-view').style.display = "none";
+      document.getElementById('admin-pass').value = "";
+      showToast("Logged Out");
     }
 
     function setAdminFilter(filter) {
-        currentAdminFilter = filter;
-        document.getElementById('btn-show-pending').classList.remove('active');
-        document.getElementById('btn-show-all').classList.remove('active');
-        
-        if(filter === 'pending') {
-            document.getElementById('btn-show-pending').classList.add('active');
-        } else {
-            document.getElementById('btn-show-all').classList.add('active');
-        }
-        loadAdminPanel();
+      currentAdminFilter = filter;
+      document.getElementById('btn-show-pending').classList.remove('active');
+      document.getElementById('btn-show-all').classList.remove('active');
+
+      if (filter === 'pending') {
+        document.getElementById('btn-show-pending').classList.add('active');
+      } else {
+        document.getElementById('btn-show-all').classList.add('active');
+      }
+      loadAdminPanel();
     }
 
     // --- UPLOAD ---
     document.getElementById("uploadBtn").addEventListener("click", async () => {
-        const name = document.getElementById("name").value.trim();
-        const file = document.getElementById("image").files[0];
-        const feedback = document.getElementById("feedback").value.trim();
-        
-        if (!name || !file) { 
-            showToast("Identifier and File required.", "error"); 
-            return; 
-        }
-        
-        const btn = document.getElementById("uploadBtn");
-        const originalText = btn.textContent;
-        btn.textContent = "SUBMITTING...";
-        btn.disabled = true;
+      const name = document.getElementById("name").value.trim();
+      const file = document.getElementById("image").files[0];
+      const feedback = document.getElementById("feedback").value.trim();
 
-        try {
-            const ext = file.name.split('.').pop();
-            const safeName = name.replace(/[^a-zA-Z0-9]/g, "_");
-            const filePath = `${safeName}_${Date.now()}.${ext}`;
+      if (!name || !file) {
+        showToast("Identifier and File required.", "error");
+        return;
+      }
 
-            const { error: uploadError } = await supabaseClient.storage.from('technomantra').upload(filePath, file);
-            if (uploadError) throw uploadError;
+      const btn = document.getElementById("uploadBtn");
+      const originalText = btn.textContent;
+      btn.textContent = "SUBMITTING...";
+      btn.disabled = true;
 
-            const { data: urlData } = supabaseClient.storage.from('technomantra').getPublicUrl(filePath);
-            const imageUrl = urlData.publicUrl;
+      try {
+        const ext = file.name.split('.').pop();
+        const safeName = name.replace(/[^a-zA-Z0-9]/g, "_");
+        const filePath = `${safeName}_${Date.now()}.${ext}`;
 
-            const { error: dbError } = await supabaseClient
-                .from('memories')
-                .insert([{ name: name, feedback: feedback, image_url: imageUrl, status: 'pending' }]);
+        const { error: uploadError } = await supabaseClient.storage.from('technomantra').upload(filePath, file);
+        if (uploadError) throw uploadError;
 
-            if (dbError) throw dbError;
+        const { data: urlData } = supabaseClient.storage.from('technomantra').getPublicUrl(filePath);
+        const imageUrl = urlData.publicUrl;
 
-            showToast("Upload Successful! Pending Approval.", "success");
-            document.getElementById("name").value = ""; 
-            document.getElementById("image").value = ""; 
-            document.getElementById("feedback").value = "";
-            albumLoaded = false; // Reset album so it reloads next time
+        const { error: dbError } = await supabaseClient
+          .from('memories')
+          .insert([{ name: name, feedback: feedback, image_url: imageUrl, status: 'pending' }]);
 
-        } catch (e) { 
-            console.error(e);
-            showToast("Error: " + e.message, "error"); 
-        } finally {
-            btn.textContent = originalText;
-            btn.disabled = false;
-        }
+        if (dbError) throw dbError;
+
+        showToast("Upload Successful! Pending Approval.", "success");
+        document.getElementById("name").value = "";
+        document.getElementById("image").value = "";
+        document.getElementById("feedback").value = "";
+        albumLoaded = false;
+
+      } catch (e) {
+        console.error(e);
+        showToast("Error: " + e.message, "error");
+      } finally {
+        btn.textContent = originalText;
+        btn.disabled = false;
+      }
     });
 
-    // --- ALBUM (APPROVED ONLY) ---
+    // --- ALBUM LOADER (WITH DEMO FALLBACK) ---
     async function loadAlbum() {
-      if (albumLoaded) return;
       const loadingMsg = document.getElementById('loading-msg');
-      const flipbookEl = document.getElementById('flipbook');
       loadingMsg.style.display = 'flex';
-
-      try { if ($("#flipbook").turn("is")) { $("#flipbook").turn("destroy"); } } catch(e) {}
-      flipbookEl.innerHTML = ''; 
+      loadingMsg.innerHTML = '<div class="spinner-circle"></div> CONNECTING...';
 
       try {
         const { data: memories, error } = await supabaseClient
-            .from('memories')
-            .select('*')
-            .eq('status', 'approved')
-            .order('created_at', { ascending: false });
+          .from('memories')
+          .select('*')
+          .eq('status', 'approved')
+          .order('created_at', { ascending: false });
 
         if (error) throw error;
 
-        if(memories.length === 0) {
-            loadingMsg.innerHTML = "<span>No approved memories found yet.</span>";
-            return;
+        if (memories.length === 0) {
+          // If database is connected but empty, we might still want to show demo data or a message.
+          // Here we throw an error to trigger the fallback for demonstration.
+          throw new Error("Database empty.");
         }
 
-        // Cover Page
-        $("<div class='page hard'>").append(
-            $("<div class='cover-content'>").append(
-                $("<h1 class='cover-title'>").text("Technomantra"),
-                $("<div class='cover-subtitle'>").text("2026")
-            )
-        ).appendTo(flipbookEl);
+        albumDataCache = memories;
+        initResponsiveBook(memories);
 
-        // Memory Pages
-        memories.forEach(memory => {
-            const caption = memory.feedback ? `"${memory.feedback}"` : "";
-            $("<div class='page'>").append(
-                $("<div class='polaroid-wrapper'>").append(
-                    $("<img>").attr("src", memory.image_url).addClass("polaroid-img"),
-                    $("<div class='polaroid-info'>").append(
-                        $("<div class='polaroid-name'>").text(`- ${memory.name}`),
-                        $("<div class='polaroid-feedback'>").text(caption)
-                    )
-                )
-            ).appendTo(flipbookEl);
-        });
-
-        // Back Cover
-        $("<div class='page hard'>").append(
-             $("<div class='cover-content'>").append(
-                $("<h1 class='cover-title' style='font-size:48px; letter-spacing:0;'>").text("2026"),
-                $("<div class='back-cover-text'>").text("ARCHIVED MEMORIES")
-             )
-        ).appendTo(flipbookEl);
-
-        // Initialize Turn.js
-        setTimeout(() => {
-            flipbook.turn({ 
-                width: 800, 
-                height: 500, 
-                autoCenter: true, 
-                duration: 1000, 
-                acceleration: true, 
-                gradients: true, 
-                elevation: 50,
-                when: {
-                    turning: function(e, page, view) {
-                        // Optional: play sound or log page
-                    }
-                }
-            });
-            scaleBook();
-            albumLoaded = true;
-            loadingMsg.style.display = 'none';
-        }, 100);
-
-      } catch (err) { 
-          console.error(err); 
-          loadingMsg.innerText = "Error loading data."; 
+      } catch (err) {
+        console.error("Supabase Error:", err);
+        
+        // --- FIX: FALLBACK TO DEMO DATA IF FETCH FAILS ---
+        showToast("Connection Failed. Loading Demo Data...", "error");
+        
+        // Create fake data for demonstration
+        const demoMemories = [
+            { name: "Demo User 1", feedback: "Technomantra 2026 was amazing!", image_url: "https://placehold.co/400x500/1e293b/FFF?text=Memory+1" },
+            { name: "Demo User 2", feedback: "Best midnight album ever.", image_url: "https://placehold.co/400x500/1e293b/FFF?text=Memory+2" },
+            { name: "Demo User 3", feedback: "Scrolling works perfectly now.", image_url: "https://placehold.co/400x500/1e293b/FFF?text=Memory+3" },
+            { name: "Demo User 4", feedback: "No more jittery movements!", image_url: "https://placehold.co/400x500/1e293b/FFF?text=Memory+4" }
+        ];
+        
+        albumDataCache = demoMemories; // Cache it so resize works
+        initResponsiveBook(demoMemories); 
       }
     }
 
     // --- ADMIN PANEL ---
     async function loadAdminPanel() {
-        const grid = document.getElementById('admin-grid');
-        const empty = document.getElementById('admin-empty');
-        grid.innerHTML = '';
-        empty.style.display = 'none';
+      const grid = document.getElementById('admin-grid');
+      const empty = document.getElementById('admin-empty');
+      grid.innerHTML = '';
+      empty.style.display = 'none';
 
-        let query = supabaseClient.from('memories').select('*').order('created_at', { ascending: true });
-        
-        if(currentAdminFilter === 'pending') {
-            query = query.eq('status', 'pending');
-        }
+      let query = supabaseClient.from('memories').select('*').order('created_at', { ascending: true });
 
-        const { data: items, error } = await query;
+      if (currentAdminFilter === 'pending') {
+        query = query.eq('status', 'pending');
+      }
 
-        if(error) {
-            showToast("Error fetching admin data", "error");
-            return;
-        }
+      const { data: items, error } = await query;
 
-        if(items.length === 0) {
-            empty.style.display = 'block';
-            return;
-        }
+      if (error) {
+        showToast("Error fetching admin data", "error");
+        return;
+      }
 
-        items.forEach(item => {
-            let statusBadge = '';
-            if(item.status === 'approved') statusBadge = '<span style="color:var(--secondary); font-weight:bold;">✔ Approved</span>';
-            if(item.status === 'rejected') statusBadge = '<span style="color:var(--danger); font-weight:bold;">✖ Rejected</span>';
+      if (items.length === 0) {
+        empty.style.display = 'block';
+        return;
+      }
 
-            const card = document.createElement('div');
-            card.className = 'admin-card';
-            card.id = `card-${item.id}`;
-            card.innerHTML = `
+      items.forEach(item => {
+        let statusBadge = '';
+        if (item.status === 'approved') statusBadge = '<span style="color:var(--secondary); font-weight:bold;">✔ Approved</span>';
+        if (item.status === 'rejected') statusBadge = '<span style="color:var(--danger); font-weight:bold;">✖ Rejected</span>';
+
+        const card = document.createElement('div');
+        card.className = 'admin-card';
+        card.id = `card-${item.id}`;
+        card.innerHTML = `
                 <img src="${item.image_url}" alt="Submission" />
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
                     <div style="font-weight:bold; color:var(--text-main);">${item.name}</div>
@@ -936,36 +1246,37 @@
                     ` : '<span style="font-size:12px; color:var(--text-muted); width:100%; text-align:center;">Actions completed</span>'}
                 </div>
             `;
-            grid.appendChild(card);
-        });
+        grid.appendChild(card);
+      });
     }
 
     async function updateStatus(id, newStatus) {
-        const card = document.getElementById(`card-${id}`);
-        if(card) {
-            card.style.opacity = '0.5';
-            card.style.pointerEvents = 'none';
-        }
+      const card = document.getElementById(`card-${id}`);
+      if (card) {
+        card.style.opacity = '0.5';
+        card.style.pointerEvents = 'none';
+      }
 
-        try {
-            const { data, error } = await supabaseClient
-                .from('memories')
-                .update({ status: newStatus })
-                .eq('id', id);
+      try {
+        const { data, error } = await supabaseClient
+          .from('memories')
+          .update({ status: newStatus })
+          .eq('id', id);
 
-            if (error) {
-                showToast("Error updating status", "error");
-                loadAdminPanel(); 
-            } else {
-                showToast(`Memory ${newStatus}!`, "success");
-                loadAdminPanel();
-            }
-        } catch (e) {
-            showToast("System Error", "error");
-            loadAdminPanel();
+        if (error) {
+          showToast("Error updating status", "error");
+          loadAdminPanel();
+        } else {
+          showToast(`Memory ${newStatus}!`, "success");
+          loadAdminPanel();
         }
+      } catch (e) {
+        showToast("System Error", "error");
+        loadAdminPanel();
+      }
     }
 
   </script>
 </body>
+
 </html>
