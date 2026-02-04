@@ -46,20 +46,40 @@
       --danger: #ef4444;
       --success: #10b981;
     }
+
     @media (max-width: 768px) {
       .flipbook-viewport {
-          touch-action: auto !important;
-          overflow-y: visible !important;
+        touch-action: auto !important;
+        overflow-y: visible !important;
       }
 
       #album-section {
-          overflow-y: auto !important;
-          -webkit-overflow-scrolling: touch;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
       }
 
       #flipbook-wrapper {
-          touch-action: auto !important;
+        touch-action: auto !important;
       }
+      
+      /* --- FIX: MOBILE LAYOUT ADJUSTMENTS FOR "CLOSER" FEEL --- */
+      main {
+        padding: 5px !important; /* Reduced padding to bring content to edges */
+      }
+
+      #album-section {
+        padding-bottom: 30px !important; /* Less empty space at bottom */
+      }
+
+      .flipbook-viewport {
+        padding: 0 !important; /* No internal padding, book touches edges */
+        margin-top: 5px;
+        border-radius: 12px;
+      }
+      
+      /* Arrows tighter to content */
+      .nav-prev { left: 2px !important; }
+      .nav-next { right: 2px !important; }
     }
 
     * {
@@ -67,13 +87,12 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    html,body {
+    html, body {
       height: 100%;
       overflow-x: hidden;
       overflow-y: auto;
       touch-action: auto;
     }
-
 
     body {
       margin: 0;
@@ -217,7 +236,7 @@
       display: flex;
       justify-content: center;
       align-items: flex-start;
-      padding: 20px;
+      padding: 20px; /* Default padding */
       position: relative;
       min-height: 80vh;
       flex-direction: column;
@@ -340,7 +359,6 @@
       align-items: center;
       width: 100%;
       padding-bottom: 80px;
-      /* Extra space at bottom for mobile scrolling */
     }
 
     .flipbook-viewport {
@@ -350,21 +368,15 @@
       justify-content: center;
       align-items: flex-start;
       position: relative;
-      /* Semi-transparent background to let the Buddha image shine through slightly */
       background: rgba(15, 23, 42, 0.4);
       backdrop-filter: blur(5px);
       border-radius: 16px;
       border: 1px solid var(--border);
       box-shadow: 0 0 50px rgba(124, 58, 237, 0.2);
       max-width: 100%;
-      
-      /* --- FIX: CHANGED FROM pan-y TO pan-x --- */
-      /* This allows vertical scrolling of the main page */
       touch-action: pan-x;
-      
       margin-bottom: 20px;
       padding: 10px;
-      /* Padding to prevent book edges touching border */
       box-sizing: border-box;
     }
 
@@ -398,12 +410,9 @@
       left: -10px;
     }
 
-    /* Outside on mobile */
     .nav-next {
       right: -10px;
     }
-
-    /* Outside on mobile */
 
     /* The wrapper handles the scaling transform */
     #flipbook-wrapper {
@@ -411,16 +420,12 @@
       margin: 0 auto;
       transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
       transform: scale(1);
-      
-      /* --- FIX: ADDED THIS --- */
-      /* Fixes rendering jitter on desktop */
       will-change: transform;
     }
 
     /* PAGE STYLING */
     .page {
       width: 400px;
-      /* Base logical size */
       height: 500px;
       background-color: var(--paper-color);
       color: var(--ink-color);
@@ -689,7 +694,7 @@
       }
     }
 
-    /* --- MOBILE RESPONSIVENESS TWEAKS --- */
+    /* --- MOBILE RESPONSIVENESS TWEAKS (General) --- */
     @media (max-width: 768px) {
       .upload-layout {
         grid-template-columns: 1fr;
@@ -711,7 +716,6 @@
         font-size: 14px;
       }
 
-      /* Adjust Admin Buttons for Touch */
       .btn-approve,
       .btn-reject {
         padding: 12px;
@@ -721,8 +725,6 @@
 
     /* --- SPECIFIC MOBILE ALBUM TWEAKS (Small Screens) --- */
     @media (max-width: 480px) {
-
-      /* Shrink text in Polaroids so it doesn't overflow small pages */
       .polaroid-name {
         font-size: 14px;
       }
@@ -731,7 +733,6 @@
         font-size: 16px;
       }
 
-      /* Move arrows slightly outside to not block content */
       .nav-prev {
         left: -20px;
       }
@@ -740,7 +741,6 @@
         right: -20px;
       }
 
-      /* Reduce cover font size slightly */
       .cover-title {
         font-size: 48px;
       }
@@ -850,11 +850,11 @@
     let currentAdminFilter = 'pending';
 
     // Store state for resize logic
-    let lastViewMode = null; // 'mobile' or 'desktop'
+    let lastViewMode = null;
     let resizeTimeout;
-    let albumDataCache = null; // Store data so we don't refetch on resize
+    let albumDataCache = null;
 
-    // --- TOAST NOTIFICATION SYSTEM (Replaces Alert) ---
+    // --- TOAST NOTIFICATION SYSTEM ---
     function showToast(message, type = 'info') {
       const container = document.getElementById('toast-container');
       const toast = document.createElement('div');
@@ -863,7 +863,6 @@
 
       container.appendChild(toast);
 
-      // Remove after 3 seconds
       setTimeout(() => {
         toast.style.animation = 'fadeOut 0.3s forwards';
         setTimeout(() => toast.remove(), 300);
@@ -871,90 +870,62 @@
     }
 
     // --- TAB LOGIC ---
-   function switchTab(tabName) {
+    function switchTab(tabName) {
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
 
-  // Remove active class from all buttons
-  document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+      if (event && event.target) {
+        event.target.classList.add('active');
+      } else {
+        const index = tabName === 'upload' ? 0 : tabName === 'album' ? 1 : 2;
+        document.querySelectorAll('.nav-btn')[index].classList.add('active');
+      }
 
-  if (event && event.target) {
-      event.target.classList.add('active');
-  } else {
-      const index = tabName === 'upload' ? 0 : tabName === 'album' ? 1 : 2;
-      document.querySelectorAll('.nav-btn')[index].classList.add('active');
-  }
+      document.querySelectorAll('.section-container').forEach(sec => sec.classList.remove('active'));
+      document.querySelector("main").style.alignItems = "";
 
-  // Hide all sections
-  document.querySelectorAll('.section-container').forEach(sec => sec.classList.remove('active'));
+      if (tabName === 'upload') {
+        document.getElementById('upload-section').classList.add('active');
+      } else if (tabName === 'album') {
+        document.getElementById('album-section').classList.add('active');
+        document.querySelector("main").style.alignItems = "flex-start";
 
-  // Reset main alignment by default
-  document.querySelector("main").style.alignItems = "";
-
-  if (tabName === 'upload') {
-
-    document.getElementById('upload-section').classList.add('active');
-
-  } else if (tabName === 'album') {
-
-    document.getElementById('album-section').classList.add('active');
-    document.querySelector("main").style.alignItems = "flex-start";
-
-    // --- FIX: CHECK IF ALBUM IS ALREADY LOADED ---
-    // Only load from database if it hasn't been loaded yet
-    if (!albumLoaded) {
-        loadAlbum();
-    } else {
-        // If it IS loaded, just make sure the sizing is correct
-        // No flicker, no reload, just showing what's there
-        resizeBookLogic();
+        if (!albumLoaded) {
+          loadAlbum();
+        } else {
+          resizeBookLogic();
+        }
+      } else if (tabName === 'admin') {
+        document.getElementById('admin-section').classList.add('active');
+        if (isAdminLoggedIn) loadAdminPanel();
+      }
     }
-
-  } else if (tabName === 'admin') {
-
-    document.getElementById('admin-section').classList.add('active');
-
-    if (isAdminLoggedIn) loadAdminPanel();
-  }
-}
-
 
     function goNext() { $("#flipbook").turn("next"); }
     function goPrev() { $("#flipbook").turn("previous"); }
 
-    // --- RESPONSIVE BOOK LOGIC (OPTIMIZED FOR MOBILE) ---
-
+    // --- RESPONSIVE BOOK LOGIC ---
     function resizeBookLogic() {
       if (!albumLoaded || !$("#flipbook").turn("is")) return;
 
-      // Determine current dimensions
       const display = $("#flipbook").turn("display");
       const isSingle = display === "single";
-
-      // Base dimensions defined in CSS for .page
       const pageW = 400;
       const pageH = 500;
-
-      // Current total width of the book based on mode
       const currentBookW = isSingle ? pageW : (pageW * 2);
       const currentBookH = pageH;
 
-      // Get Viewport size
       const viewport = document.querySelector('.flipbook-viewport');
-
-      // --- MOBILE RESPONSIVE LOGIC UPDATE ---
-      // On mobile (width < 768), we want the book to fill nearly the full width.
-      // On desktop, we keep some margin.
       let viewW;
 
       if (window.innerWidth < 768) {
-        // --- FIX: INCREASE MOBILE WIDTH TO 95% ---
-        // This forces the book to be relatively smaller compared to the screen,
-        // leaving more room for scrolling and making the pages easier to view.
-        viewW = window.innerWidth * 0.95; 
+        // --- FIX: "CLOSER" SCROLL BAR ---
+        // Calculate width more aggressively to fill the screen.
+        // Using 98% of window width ensures minimal side gaps.
+        viewW = window.innerWidth * 0.98; 
         
-        // --- FIX: ADD EXTRA MARGIN FOR ARROWS ON MOBILE ---
-        // Subtract arrow size so arrows don't sit off-screen on very small phones
-        if(window.innerWidth < 400) {
-            viewW = window.innerWidth * 0.85; 
+        // Small safety margin for very tiny devices
+        if(window.innerWidth < 360) {
+            viewW = window.innerWidth * 0.96;
         }
 
       } else {
@@ -962,35 +933,24 @@
         viewW = viewport.clientWidth - 80;
       }
 
-      // Calculate Scale based on Width
       let scale = viewW / currentBookW;
-
-      // Constraint: Don't upscale beyond 1.2x
       if (scale > 1.2) scale = 1.2;
 
-      // Apply Transform
       flipbookWrapper.css("transform", `scale(${scale})`);
 
-      // Calculate the physical height of the book after scaling
       const finalH = currentBookH * scale;
-
-      // Set the viewport height to match the scaled book height
-      // This allows the body to scroll naturally if the book is tall
-     viewport.style.minHeight = `${finalH}px`;
+      viewport.style.minHeight = `${finalH}px`;
       viewport.style.height = "auto";
-
     }
 
     function getDeviceMode() {
       return window.innerWidth < 768 ? 'mobile' : 'desktop';
     }
 
-    // 3. Builds and Initializes the Book
     function initResponsiveBook(memories) {
       const flipbookEl = document.getElementById('flipbook');
       const mode = getDeviceMode();
 
-      // Clean up
       try {
         if ($("#flipbook").turn("is")) {
           $("#flipbook").turn("destroy");
@@ -998,8 +958,7 @@
       } catch (e) { }
       flipbookEl.innerHTML = '';
 
-      // --- BUILD HTML ---
-      // Cover
+      // Build Cover
       $("<div class='page hard'>").append(
         $("<div class='cover-content'>").append(
           $("<h1 class='cover-title'>").text("Technomantra"),
@@ -1007,7 +966,7 @@
         )
       ).appendTo(flipbookEl);
 
-      // Pages
+      // Build Pages
       memories.forEach(memory => {
         const caption = memory.feedback ? `"${memory.feedback}"` : "";
         $("<div class='page'>").append(
@@ -1021,7 +980,7 @@
         ).appendTo(flipbookEl);
       });
 
-      // Back Cover
+      // Build Back Cover
       $("<div class='page hard'>").append(
         $("<div class='cover-content'>").append(
           $("<h1 class='cover-title' style='font-size:48px; letter-spacing:0;'>").text("2026"),
@@ -1029,41 +988,34 @@
         )
       ).appendTo(flipbookEl);
 
-      // --- INITIALIZE TURN.JS ---
       setTimeout(() => {
         const options = {
           width: mode === 'mobile' ? 400 : 800,
           height: 500,
           autoCenter: true,
-          duration: 600, // Slightly faster on mobile generally
+          duration: 600,
           acceleration: true,
           gradients: true,
           elevation: 50,
           display: mode === 'mobile' ? 'single' : 'double',
           when: {
-            turning: function (e, page, view) {
-              // Optional: analytics hook
-            }
+            turning: function (e, page, view) { }
           }
         };
 
         flipbook.turn(options);
-
         lastViewMode = mode;
         albumLoaded = true;
         document.getElementById('loading-msg').style.display = 'none';
-
         resizeBookLogic();
       }, 50);
     }
 
-    // 4. Resize Listener
     $(window).resize(() => {
       clearTimeout(resizeTimeout);
       resizeTimeout = setTimeout(() => {
         if (albumLoaded && albumDataCache) {
           const newMode = getDeviceMode();
-
           if (newMode !== lastViewMode) {
             initResponsiveBook(albumDataCache);
           } else {
@@ -1156,7 +1108,7 @@
       }
     });
 
-    // --- ALBUM LOADER (WITH DEMO FALLBACK) ---
+    // --- ALBUM LOADER ---
     async function loadAlbum() {
       const loadingMsg = document.getElementById('loading-msg');
       loadingMsg.style.display = 'flex';
@@ -1172,8 +1124,6 @@
         if (error) throw error;
 
         if (memories.length === 0) {
-          // If database is connected but empty, we might still want to show demo data or a message.
-          // Here we throw an error to trigger the fallback for demonstration.
           throw new Error("Database empty.");
         }
 
@@ -1182,11 +1132,8 @@
 
       } catch (err) {
         console.error("Supabase Error:", err);
-        
-        // --- FIX: FALLBACK TO DEMO DATA IF FETCH FAILS ---
         showToast("Connection Failed. Loading Demo Data...", "error");
         
-        // Create fake data for demonstration
         const demoMemories = [
             { name: "Demo User 1", feedback: "Technomantra 2026 was amazing!", image_url: "https://placehold.co/400x500/1e293b/FFF?text=Memory+1" },
             { name: "Demo User 2", feedback: "Best midnight album ever.", image_url: "https://placehold.co/400x500/1e293b/FFF?text=Memory+2" },
@@ -1194,7 +1141,7 @@
             { name: "Demo User 4", feedback: "No more jittery movements!", image_url: "https://placehold.co/400x500/1e293b/FFF?text=Memory+4" }
         ];
         
-        albumDataCache = demoMemories; // Cache it so resize works
+        albumDataCache = demoMemories;
         initResponsiveBook(demoMemories); 
       }
     }
