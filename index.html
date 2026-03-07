@@ -464,12 +464,12 @@
       padding-top: 10px;
     }
 
-    /* --- POLAROID (UPDATED FOR FIXED SIZE) --- */
+    /* --- POLAROID --- */
     .polaroid-wrapper {
       background: #fff;
       padding: 15px 15px 30px 15px;
       width: 85%;
-      height: 420px; /* Fixed height for the card container */
+      height: 420px;
       margin: 40px auto;
       display: flex;
       flex-direction: column;
@@ -708,7 +708,7 @@
   <nav>
     <button class="nav-btn active" onclick="switchTab('upload')">01 // UPLOAD</button>
     <button class="nav-btn" onclick="switchTab('album')">02 // ALBUM</button>
-    <button class="nav-btn" onclick="switchTab('admin')">03 // ADMIN</button>
+    <!-- ADMIN BUTTON REMOVED -->
   </nav>
 
   <main>
@@ -821,11 +821,17 @@
     function switchTab(tabName) {
       document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
 
-      if (event && event.target) {
-        event.target.classList.add('active');
-      } else {
-        const index = tabName === 'upload' ? 0 : tabName === 'album' ? 1 : 2;
-        document.querySelectorAll('.nav-btn')[index].classList.add('active');
+      // Handle button highlighting
+      // Only highlight if it's not the admin tab (since admin button is removed)
+      if (tabName !== 'admin') {
+        if (event && event.target) {
+          event.target.classList.add('active');
+        } else {
+          // Index 0 is upload, Index 1 is album
+          const index = tabName === 'upload' ? 0 : 1;
+          const btns = document.querySelectorAll('.nav-btn');
+          if(btns[index]) btns[index].classList.add('active');
+        }
       }
 
       document.querySelectorAll('.section-container').forEach(sec => sec.classList.remove('active'));
@@ -1165,6 +1171,14 @@
         loadAdminPanel();
       }
     }
+
+    // --- URL HASH CHECK FOR ADMIN ACCESS ---
+    window.addEventListener('load', () => {
+      // Check if URL contains #admin
+      if (window.location.hash === '#admin') {
+        switchTab('admin');
+      }
+    });
 
   </script>
 </body>
