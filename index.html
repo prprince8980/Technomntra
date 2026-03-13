@@ -50,7 +50,7 @@
         touch-action: auto !important;
         overflow-y: visible !important;
         /* Reduced outer padding on mobile to give more room to the book itself */
-        padding: 5px !important; 
+        padding: 5px !important;
         margin-top: 5px;
         border-radius: 12px;
       }
@@ -64,29 +64,37 @@
       #flipbook-wrapper {
         touch-action: auto !important;
       }
-      
+
       main {
         padding: 5px !important;
       }
 
-      .nav-prev { left: 2px !important; }
-      .nav-next { right: 2px !important; }
+      .nav-prev {
+        left: 2px !important;
+      }
+
+      .nav-next {
+        right: 2px !important;
+      }
 
       /* --- MOBILE ALBUM PADDING FIX --- */
       /* Adding padding INSIDE the page, not outside */
       .page {
-        padding: 15px; 
-        box-sizing: border-box; 
+        padding: 15px;
+        box-sizing: border-box;
       }
-      
+
       .polaroid-wrapper {
-        width: 100%; /* Fill the padded space */
-        height: 380px; /* Adjust height to fit padding */
+        width: 100%;
+        /* Fill the padded space */
+        height: 380px;
+        /* Adjust height to fit padding */
         margin: 0 auto;
       }
-      
+
       .polaroid-img {
-        height: 260px; /* Adjust image height for padding */
+        height: 260px;
+        /* Adjust image height for padding */
       }
     }
 
@@ -95,7 +103,8 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    html, body {
+    html,
+    body {
       height: 100%;
       overflow-x: hidden;
       overflow-y: auto;
@@ -175,12 +184,22 @@
     }
 
     @keyframes slideIn {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
     }
 
     @keyframes fadeOut {
-      to { opacity: 0; transform: translateY(10px); }
+      to {
+        opacity: 0;
+        transform: translateY(10px);
+      }
     }
 
     /* --- Navigation --- */
@@ -214,7 +233,7 @@
       min-width: 90px;
       text-align: center;
       letter-spacing: 0.5px;
-      user-select: none; 
+      user-select: none;
     }
 
     .nav-btn.active,
@@ -248,7 +267,7 @@
 
     .section-container.active {
       /* Changed to block to allow natural vertical scrolling flow */
-      display: block; 
+      display: block;
       width: 100%;
     }
 
@@ -258,10 +277,12 @@
       overflow-y: auto;
       min-height: 500px;
     }
-    
+
     #admin-section.active {
-      display: block; /* Use block layout for scrolling */
-      overflow-y: auto; /* Explicitly allow scrolling */
+      display: block;
+      /* Use block layout for scrolling */
+      overflow-y: auto;
+      /* Explicitly allow scrolling */
     }
 
     /* --- Upload Section --- */
@@ -371,9 +392,10 @@
       align-items: center;
       width: 100%;
       padding-bottom: 80px;
-      display: none; /* Default hidden */
+      display: none;
+      /* Default hidden */
     }
-    
+
     #album-section.active {
       display: flex;
     }
@@ -423,8 +445,13 @@
       color: white;
     }
 
-    .nav-prev { left: -10px; }
-    .nav-next { right: -10px; }
+    .nav-prev {
+      left: -10px;
+    }
+
+    .nav-next {
+      right: -10px;
+    }
 
     #flipbook-wrapper {
       transform-origin: top center;
@@ -523,12 +550,13 @@
       z-index: 10;
     }
 
-  .polaroid-img {
-  width: 100%;
-  height: 300px;
-  object-fit: contain;
-  background: #f1f5f9;
-}
+    .polaroid-img {
+      width: 100%;
+      height: 300px;
+      object-fit: contain;
+      background: #f1f5f9;
+    }
+
     .polaroid-info {
       text-align: center;
       width: 100%;
@@ -690,12 +718,21 @@
     }
 
     @keyframes spin {
-      to { transform: rotate(360deg); }
+      to {
+        transform: rotate(360deg);
+      }
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     /* --- MOBILE RESPONSIVENESS TWEAKS (General) --- */
@@ -712,20 +749,46 @@
         min-width: 80px;
       }
 
-      .hero h1 { font-size: 36px; }
-      .hero p { font-size: 14px; }
+      .hero h1 {
+        font-size: 36px;
+      }
 
-      .btn-approve, .btn-reject { padding: 12px; font-size: 14px; }
+      .hero p {
+        font-size: 14px;
+      }
+
+      .btn-approve,
+      .btn-reject {
+        padding: 12px;
+        font-size: 14px;
+      }
     }
 
     /* --- SPECIFIC MOBILE ALBUM TWEAKS (Small Screens) --- */
     @media (max-width: 480px) {
-      .polaroid-name { font-size: 14px; }
-      .polaroid-feedback { font-size: 16px; }
-      .nav-prev { left: -20px; }
-      .nav-next { right: -20px; }
-      .cover-title { font-size: 48px; }
-      .cover-subtitle { font-size: 18px; }
+      .polaroid-name {
+        font-size: 14px;
+      }
+
+      .polaroid-feedback {
+        font-size: 16px;
+      }
+
+      .nav-prev {
+        left: -20px;
+      }
+
+      .nav-next {
+        right: -20px;
+      }
+
+      .cover-title {
+        font-size: 48px;
+      }
+
+      .cover-subtitle {
+        font-size: 18px;
+      }
     }
   </style>
 </head>
@@ -818,7 +881,7 @@
   <script>
     // --- CONFIG ---
     const SUPABASE_URL = "https://worcmjutlantjutpdsjq.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_vK-bQ1JYqzhN4K6WFUP73Q_WiBeVfxu";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvcmNtanV0bGFudGp1dHBkc2pxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3ODczNzIsImV4cCI6MjA4NTM2MzM3Mn0.Od0wLqh0xGxGWiDA3SDHybClPb4SZanbHu6p0wm_KUU";
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const flipbook = $("#flipbook");
@@ -858,7 +921,7 @@
         } else {
           const index = tabName === 'upload' ? 0 : 1;
           const btns = document.querySelectorAll('.nav-btn');
-          if(btns[index]) btns[index].classList.add('active');
+          if (btns[index]) btns[index].classList.add('active');
         }
       }
 
@@ -900,10 +963,10 @@
       let viewW;
 
       if (window.innerWidth < 768) {
-        viewW = window.innerWidth * 0.98; 
-        
-        if(window.innerWidth < 360) {
-            viewW = window.innerWidth * 0.96;
+        viewW = window.innerWidth * 0.98;
+
+        if (window.innerWidth < 360) {
+          viewW = window.innerWidth * 0.96;
         }
 
       } else {
@@ -1110,16 +1173,16 @@
       } catch (err) {
         console.error("Supabase Error:", err);
         showToast("Connection Failed. Loading Demo Data...", "error");
-        
+
         const demoMemories = [
-            { name: "Demo User 1", feedback: "Technomantra 2026 was amazing!", image_url: "https://placehold.co/400x500/1e293b/FFF?text=Memory+1" },
-            { name: "Demo User 2", feedback: "Best midnight album ever.", image_url: "https://placehold.co/400x500/1e293b/FFF?text=Memory+2" },
-            { name: "Demo User 3", feedback: "Scrolling works perfectly now.", image_url: "https://placehold.co/400x500/1e293b/FFF?text=Memory+3" },
-            { name: "Demo User 4", feedback: "No more jittery movements!", image_url: "https://placehold.co/400x500/1e293b/FFF?text=Memory+4" }
+          { name: "Demo User 1", feedback: "Technomantra 2026 was amazing!", image_url: "https://placehold.co/400x500/1e293b/FFF?text=Memory+1" },
+          { name: "Demo User 2", feedback: "Best midnight album ever.", image_url: "https://placehold.co/400x500/1e293b/FFF?text=Memory+2" },
+          { name: "Demo User 3", feedback: "Scrolling works perfectly now.", image_url: "https://placehold.co/400x500/1e293b/FFF?text=Memory+3" },
+          { name: "Demo User 4", feedback: "No more jittery movements!", image_url: "https://placehold.co/400x500/1e293b/FFF?text=Memory+4" }
         ];
-        
+
         albumDataCache = demoMemories;
-        initResponsiveBook(demoMemories); 
+        initResponsiveBook(demoMemories);
       }
     }
 
